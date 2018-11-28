@@ -1,0 +1,46 @@
+== Changelog ==
+
+= 1.3 =
+Release Date: November 14th, 2018
+
+* [Added] Smart Filtering
+
+= 1.2.1 =
+Release Date: October 31st, 2018
+
+* [Improved] Made compatible with Admin Columns Pro 4.4, prepared for Smart Filtering
+
+= 1.2 =
+Release Date: June 25th, 2018
+
+* [Improved] Website field takes the option 'Link opens in new window' into account
+* [Removed] Support for PHP 5.2. The minimum version required to run Admin Columns is now PHP 5.3+.
+
+= 1.1 =
+Release Date: January 29th, 2018
+
+* [Improved] Improved Date Format support for Date and Date Time field
+* [Important] Only compatible with Admin Columns Pro 4.2 and higher
+
+= 1.0.3 =
+Release Date: December 12th, 2017
+
+* [Added] Inline edit for Date/Time field
+* [Improved] Made compatible with the Admin Columns Pro Export feature
+* [Improved] Meta changes
+* [Important] Only compatible with Admin Columns Pro 4.1 and higher
+
+= 1.0.2 =
+Release Date: May 3rd, 2017
+
+* [Fixed] Added message when pods fields are empty
+
+= 1.0.1 =
+Release Date: April 25th, 2017
+
+* [Important] Only compatible with Admin Columns Pro 4.0.3
+
+= 1.0 =
+Release Date: April 4th, 2017
+
+* [Added] Initial release of the Pods add-on, works with Admin Columns version 4.0 and higher

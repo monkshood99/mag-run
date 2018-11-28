@@ -1,0 +1,105 @@
+{
+    "days_ran": [
+        {
+            "columns": {
+                "5bf5d8ec3ba1f": {
+                    "type": "column-pods",
+                    "label": "Date",
+                    "width": "",
+                    "width_unit": "%",
+                    "pods_field": "the_date",
+                    "date_format": "m\/d\/Y",
+                    "edit": "on",
+                    "sort": "on",
+                    "filter": "off",
+                    "filter_label": "",
+                    "filter_format": "",
+                    "name": "5bf5d8ec3ba1f",
+                    "label_type": null,
+                    "search": null
+                },
+                "5bf5d8ec3e44d": {
+                    "type": "column-pods",
+                    "label": "User",
+                    "width": "",
+                    "width_unit": "%",
+                    "pods_field": "user",
+                    "display_author_as": "display_name",
+                    "user_link_to": "edit_user",
+                    "edit": "on",
+                    "sort": "on",
+                    "filter": "off",
+                    "filter_label": "",
+                    "name": "5bf5d8ec3e44d",
+                    "label_type": null,
+                    "search": null
+                },
+                "5bf5d909d1def": {
+                    "type": "date",
+                    "label": "Date",
+                    "width": "",
+                    "width_unit": "%",
+                    "edit": "on",
+                    "sort": "on",
+                    "filter": "off",
+                    "filter_label": "",
+                    "filter_format": "",
+                    "name": "5bf5d909d1def",
+                    "label_type": null,
+                    "search": null
+                }
+            }
+        }
+    ],
+    "wp-users": [
+        {
+            "columns": {
+                "username": {
+                    "type": "username",
+                    "label": "Username",
+                    "width": "",
+                    "width_unit": "%",
+                    "name": "username",
+                    "label_type": null,
+                    "search": null
+                },
+                "name": {
+                    "type": "name",
+                    "label": "Name",
+                    "width": "",
+                    "width_unit": "%",
+                    "sort": "on",
+                    "name": "name",
+                    "label_type": null
+                },
+                "email": {
+                    "type": "email",
+                    "label": "Email",
+                    "width": "",
+                    "width_unit": "%",
+                    "edit": "off",
+                    "sort": "on",
+                    "filter": "off",
+                    "filter_label": "",
+                    "name": "email",
+                    "label_type": null,
+                    "search": null
+                },
+                "5bf5d950e60b5": {
+                    "type": "column-pods",
+                    "label": "Days Ran Total",
+                    "width": "",
+                    "width_unit": "%",
+                    "pods_field": "days_ran_total",
+                    "edit": "on",
+                    "sort": "on",
+                    "filter": "off",
+                    "filter_label": "",
+                    "name": "5bf5d950e60b5",
+                    "label_type": null,
+                    "search": null
+                }
+            }
+        }
+    ]
+}

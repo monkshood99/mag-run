@@ -1,0 +1,23 @@
+{
+  "name": "Avada-Child-Theme",
+  "homepage": "https://github.com/monkshood99/mag-run",
+  "authors": [
+    "Sean Bradley <sean.bradley@moxiesozo.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "moment": "^2.22.2",
+    "fullcalendar": "^3.9.0",
+    "angular": "^1.7.5",
+    "vue": "^2.5.17"
+  }
+}
