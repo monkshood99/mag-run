@@ -16,11 +16,12 @@
 					$ctrl.$onInit = function(){
 						
 						$ctrl.run_data = {
-							date : new Date(),
-							distance : 0
+							run_date : new Date(),
+							distance : 0,
+							user : $scope.userId,
+							user_id : $scope.userId
 						}
 
-						$ctrl.user_id = $scope.userId;
 /*
 						$ctrl.default_options = {
 							wait_time : 0,
@@ -70,6 +71,7 @@
 					$ctrl.createCalendar = function(){
 	
 						$ctrl.cal = jQuery( $attrs.target ).fullCalendar({
+							events: $ctrl.eventSource,
 /*
 							defaultView: $ctrl.options.defaultView,
 							header: $ctrl.options.header ,
@@ -85,18 +87,14 @@
 					    eventClick: $ctrl.eventClick,
 					    dayClick: $ctrl.dayClick,
 
-							events: $ctrl.eventSource,
 */
 						});
 					}// create calendar
 					
 					$ctrl.addRun = function(){
-						var $data = {
-							user_id : $ctrl.user_id,
-							run : $ctrl.run_data
-						}
-						$http.post( '/?mag::post-my-run', $data).then(
+						$http.post( '/?mag::post-my-run', $ctrl.run_data).then(
 							function( response ){
+								$ctrl.cal.fullCalendar( 'refetchEvents')
 							},
 							function(){}
 						)
@@ -169,9 +167,10 @@
 					 */
 					$ctrl.eventSource = function(start, end, timezone, callback) {
 						var defer = $q.defer();	
-						$http.post( '/?mxebs::get_events', { start : start, end : end , timezone : timezone  , options : $scope.options })
+						$http.post( '/?mag::get-my-runs', { start : start, end : end , timezone : timezone  , user_id : $scope.userId })
 						.then( 
 							function( response ){ 
+								console.log( response );
 						    $ctrl.start = $ctrl.cal.fullCalendar('getCalendar').view.start.format('MMM Do \'YY');
 						    $ctrl.end = $ctrl.cal.fullCalendar('getCalendar').view.start.format('MMM Do \'YY');
 								if( response.data.success ){
@@ -179,7 +178,7 @@
 									$ctrl.events = response.data.events;
 									callback( response.data.events );
 									$clientEvents = $ctrl.cal.fullCalendar('clientEvents');
-									$ctrl.eventsPreRender( $clientEvents );
+// 									$ctrl.eventsPreRender( $clientEvents );
 									$timeout( function(){ $q.resolve( response ); $scope.$apply() })
 								}
 							}, 

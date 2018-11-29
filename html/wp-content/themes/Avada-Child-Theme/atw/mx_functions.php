@@ -2087,10 +2087,6 @@ function mx_list( $mx_page = false ) {
 
 
 
-//add login screen markup
-add_filter( 'login_form', array('Atw_admin','login_env') );
-
-
 
 
 

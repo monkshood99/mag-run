@@ -17,6 +17,6 @@ require_once(ATW_DIR . 'classes/html.php');
 include(ATW_DIR . 'lib/underscore.php');
 include(ATW_DIR . 'mx_functions.php');
 include(ATW_DIR . 'classes/session.php');
-include(ATW_DIR . 'run.php');
+include(ATW_DIR . 'atw_app.php');
 
 ?>

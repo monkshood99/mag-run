@@ -19,12 +19,9 @@
 ?>
 
 
-<div ng-app="WebsiteApp">
+<div ng-app="WebsiteApp" >
 
 	<div athlete-calendar target="#calendar" user-id="<?= $user->ID;?>">
-		<pre>
-			{{$ctrl | json }}
-		</pre>
 		<form ng-submit="$ctrl.addRun()">
 			<p>
 				<label>Distance</label>
@@ -32,7 +29,7 @@
 			</p>
 			<p>
 				<label>Date</label>
-				<input type = 'date' ng-model="$ctrl.run_data.date" name="distance" />
+				<input type = 'date' ng-model="$ctrl.run_data.run_date" name="distance" />
 			</p>
 			<p>
 			  <button type = 'submit' >Post My Run</button>
