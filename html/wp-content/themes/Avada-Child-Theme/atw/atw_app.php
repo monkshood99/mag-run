@@ -3,9 +3,13 @@
 // after init 
 add_action( 'init', ['Atw_app', 'init'] , 2, 100 );
 	
+add_shortcode( 'total-distance', ['Atw_app', 'get_total_distance_shortcode']  );	
+add_shortcode( 'total-runs', ['Atw_app', 'get_total_runs_shortcode']  );	
 	
+/*
 add_action('pods_api_pre_save_pod_item_run', array('Atw_app', 'pods_api_pre_save_pod_item_run'),999, 3); 
 add_action('pods_api_pre_save_pod_item_user', array('Atw_app', 'pods_api_pre_save_pod_item_user'),999, 3); 
+*/
 	
 	
 	
@@ -15,20 +19,60 @@ class Atw_app{
 	public static function init(){
 		if( trying_to( 'mag::post-my-run' , 'request' )) static::post_my_run();
 		if( trying_to( 'mag::get-my-runs' , 'request' )) static::get_my_runs();
-		
+		if( trying_to( 'mag::get-total-runs' , 'request' )) static::get_total_runs(false);
+		if( trying_to( 'mag::get-total-distance' , 'request' )) static::get_total_distance(false);
 	}
 
+	public static function get_total_runs( $local = true ){
+		global $wpdb;
+		$total = $wpdb->get_var( "SELECT count( id ) as 'total' from `{$wpdb->base_prefix}pods_run`;");
+		if( $local ) return $total;
+		else return_json( compact( 'total'));
+	}
+
+	public static function get_total_distance( $local = true ){
+		global $wpdb;
+		$total = $wpdb->get_var( "SELECT sum( distance ) as 'total' from `{$wpdb->base_prefix}pods_run`;");
+		if( $local ) return $total;
+		else return_json( compact( 'total'));
+	}
+	
+	public static function get_total_runs_shortcode( $atts ) {
+		return static::get_total_runs( true );
+	}
+
+	public static function get_total_distance_shortcode( $atts ) {
+		return static::get_total_distance( true );
+	}
+
+	
 	
 	public static function post_my_run(){
 		$data = mx_POST();
 		$success = false;
 		$errors = [];
-		if( !return_if( $data, 'user_id' ))$errors[]= 'Invalid User';
+		if( !$user_id = return_if( $data, 'user_id' ))$errors[]= 'Invalid User';
 		if( empty( $errors )){
 			$data->run_date = date( 'Y-m-d' , strtotime( $data->run_date ));
 			$success = pods('run')->save( $data );
+			if( $success ){
+				$user = pods('user')->find( ['where'=> "`t`.`id` = '{$user_id}'"])->data();
+				if( $user = return_if( $user , 0 )  ){
+					$user_data = [
+						'id' => $user_id,
+						'runs_total' => $user->runs_total += 1,
+						'distance_total' => $user->distance_total += $data->distance
+					];
+					pods('user')->save( $user_data );
+				}
+				$new_run = [
+					'title' => $data->distance . ' mi',
+					'start' => date( 'Y-m-d 00:00:00', strtotime( $data->run_date)) ,
+					'end' => date( 'Y-m-d 11:59:59', strtotime( $data->run_date)) 
+				];
+			}
 		}
-		return_json ( compact( 'save_data' , 'success' ));
+		return_json ( compact( 'save_data' , 'success' , 'user_data' , 'new_run'));
 	}
 
 	

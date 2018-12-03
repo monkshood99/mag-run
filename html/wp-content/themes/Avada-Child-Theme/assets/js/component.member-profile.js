@@ -6,7 +6,7 @@
 		eba.directive( 'athleteCalendar', [ '$http', '$timeout', '$rootScope', '$injector', '$q', 
 		function( $http , $timeout, $rootScope, $injector , $q ){ 
 			return {
-				"scope" : { userId : "=" },
+				"scope" : { userId : "=" ,  userStats : "="},
 				'template' : function(){},
 				'link' : function($scope, $element, $attrs ){
 				},
@@ -14,12 +14,13 @@
 					var $ctrl = $scope.$ctrl  = this
 					
 					$ctrl.$onInit = function(){
+						$ctrl.userStats = $scope.userStats;
 						
 						$ctrl.run_data = {
 							run_date : new Date(),
 							distance : 0,
-							user : $scope.userId,
-							user_id : $scope.userId
+							user : $scope.userStats.id,
+							user_id : $scope.userStats.id
 						}
 
 /*
@@ -72,20 +73,22 @@
 	
 						$ctrl.cal = jQuery( $attrs.target ).fullCalendar({
 							events: $ctrl.eventSource,
+							defaultView :'listWeek',
+							header : { left: 'prev month listWeek basicWeek', center: 'title',right: 'today next' },
+			        loading: $ctrl.eventsLoding,
+					    dayClick: $ctrl.dayClick,
+							eventRender: $ctrl.eventRender ,
 /*
 							defaultView: $ctrl.options.defaultView,
 							header: $ctrl.options.header ,
 							navLinks: true, // can click day/week names to navigate views
 							eventLimit: true, // allow "more" link when too many events
-			        loading: $ctrl.eventsLoding,
 
 			        contentHeight: $ctrl.options.contentHeight  ,
 
-							eventRender: $ctrl.eventRender ,
 					    dayRender: $ctrl.dayRender,
 
 					    eventClick: $ctrl.eventClick,
-					    dayClick: $ctrl.dayClick,
 
 */
 						});
@@ -94,7 +97,11 @@
 					$ctrl.addRun = function(){
 						$http.post( '/?mag::post-my-run', $ctrl.run_data).then(
 							function( response ){
-								$ctrl.cal.fullCalendar( 'refetchEvents')
+								if( response.data.success ){
+									$ctrl.userStats.distance_total = response.data.user_data.distance_total;
+									$ctrl.userStats.runs_total = response.data.user_data.runs_total;
+									$ctrl.cal.fullCalendar('renderEvent', response.data.new_run, true);
+								}
 							},
 							function(){}
 						)
@@ -115,8 +122,8 @@
 
 
 					$ctrl.dayClick = function(date, jsEvent, view) {
-				    	$ctrl.cal.fullCalendar('changeView', 'listDay');
-						  $ctrl.cal.fullCalendar('gotoDate', date );      
+			    	$ctrl.cal.fullCalendar('changeView', 'listDay');
+					  $ctrl.cal.fullCalendar('gotoDate', date );      
 			    }
 
 
@@ -133,7 +140,11 @@
 						$timeout( function(){ $scope.$apply() })
 	        }
 					
-					
+					$ctrl.postToFb = function( event ){
+						var data = jQuery( this ).data();
+						var message = "Post This To Facebook (I ran : " +  data.run_data.distance + "mi on " + data.run_data.run_date + ")";
+						alert( message )
+					}
 					
 					/**
 					 * render the events
@@ -142,21 +153,13 @@
 					 * @access public
 					 */
 					$ctrl.eventRender = function(event, element, view) {
-// 						console.log( 'event render');
-						if( event.exclude  ) return false; 
-					
-						if( event.past ){
-							$(element).addClass( 'past-event' );
-							button ='<button  class="btn btn-xs pull-right btn-primary book-now" disabled > Past Event  </button>';
-						}
-					
-						if( event.past_wait_time || event.unavailable ) button ='<button  class="btn btn-xs pull-right btn-primary book-now" disabled > Unavailable  </button>';
-					
-						if( event.bookable ) button ='<button  data-toggle="modal" href="#myModal"  class="btn btn-xs pull-right btn-primary book-now" > '+ event.remaining +' spots Left | <span class = "label label-info">Book Now </span></button>';
-					
-						if( event.full ) button ='<button   disabled   class="btn btn-xs pull-right btn-primary book-now" > Event Full</button>';
-					
-						$(element.find( '.fc-list-item-title')).append( button );
+						var fb_button = jQuery('<button/>', {
+								type : 'button',
+						    html: 'FB->',
+						    click: $ctrl.postToFb
+						})
+						fb_button.data( {run_data : event });
+						jQuery(element.find( '.fc-list-item-title')).append( fb_button );
 					}
 					
 					/**
@@ -296,71 +299,6 @@
 						})
 						
 					}
-
-
-					/**
-					 * category_changed
-					 * 
-					 * @var mixed
-					 * @access public
-					 */
-					$ctrl.category_changed = function(){
-						$scope.options.category = [$ctrl.category ];
-						$ctrl.cal.fullCalendar( 'refetchEvents').then(function(){ }) ;
-					}
-										
-					/**
-					 * Book the Event and maybe add it to the cart
-					 * 
-					 * @var mixed
-					 * @access public
-					 */
-					$ctrl.bookNow = function(  ){
-						$ctrl.response = {};
-						$ctrl.submitting = true;
-						$http.post( window.location.origin + window.location.pathname  + '/?mxebs::book_now', {'data' : $ctrl.data , 'event' : $ctrl.bookingEvent , returnUrl : window.location.href })
-						.then( 
-							function( response ){
-								$ctrl.submitting = false;
-								$ctrl.response = response.data; 
-								if( $ctrl.priorities ){
-									$ctrl.cal.fullCalendar( 'destroy' );
-									$ctrl.createCalendar();
-								}else{
-									$ctrl.cal.fullCalendar( 'refetchEvents');
-								}
-
-								// if this was successful, then get the prodduct and add it to the cart. 
-								if( response.data.success && $ctrl.SHOP && ( typeof( $ctrl.bookingEvent.shopify_id ) !== 'undefined'  && $ctrl.bookingEvent.shopify_id !== '' )  ){
-									// get the product then add it to the cart
-									$ctrl.SHOP.client.fetchProduct( $ctrl.bookingEvent.shopify_id ).then( 
-										function ( product ) {
-											var reservation = response.data.reservation;
-											$ctrl.bookingEvent.product = product;
-											var $cart_item = { variant : product.selectedVariant , quantity : 1, properties : { 'mx_type' :  'mxebs', 'd' :  reservation.booking_date , 'r' : reservation.ID , 'e' : reservation.booking_event_id } } 
-											$ctrl.SHOP.add_to_cart( $cart_item  )
-											$ctrl.timeout = $timeout( function(){
-												$('#myModal').modal('hide');
-											}, 10000 )
-										}, function ( error ){
-											// error 
-										}
-									);
-									
-								}else{
-									$ctrl.timeout = $timeout( function(){
-										$('#myModal').modal('hide');
-									}, 10000 )
-								}
-							}, 
-							function( error ){
-								$ctrl.success = false;
-								$ctrl.message = 'Error';
-// 								$ctrl.response = response.data
-							} 
-						);
-					}// book now
-
 				}
 			}
 		}]);
