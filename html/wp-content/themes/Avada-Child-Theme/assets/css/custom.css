@@ -1,0 +1,6 @@
+[mag-run-menu-component]{
+    display: none;
+}
+[mag-run-menu-component].logged-in{
+    display: inline-block;
+}

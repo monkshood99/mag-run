@@ -1,26 +1,63 @@
 <?php 
-	
-// after init 
-add_action( 'init', ['Atw_app', 'init'] , 2, 100 );
-	
-add_shortcode( 'total-distance', ['Atw_app', 'get_total_distance_shortcode']  );	
-add_shortcode( 'total-runs', ['Atw_app', 'get_total_runs_shortcode']  );	
-	
-/*
-add_action('pods_api_pre_save_pod_item_run', array('Atw_app', 'pods_api_pre_save_pod_item_run'),999, 3); 
-add_action('pods_api_pre_save_pod_item_user', array('Atw_app', 'pods_api_pre_save_pod_item_user'),999, 3); 
-*/
-	
-	
+
+
+Atw_app::start();
+
+
 	
 class Atw_app{
 	
+	public static function start(){
+		Atw_app::enqueue();
+		Atw_app::add_actions();
+		Atw_app::add_shortcodes();
+	}	
 	
-	public static function init(){
+	public static function extend_init(){
 		if( trying_to( 'mag::post-my-run' , 'request' )) static::post_my_run();
 		if( trying_to( 'mag::get-my-runs' , 'request' )) static::get_my_runs();
 		if( trying_to( 'mag::get-total-runs' , 'request' )) static::get_total_runs(false);
 		if( trying_to( 'mag::get-total-distance' , 'request' )) static::get_total_distance(false);
+	}
+
+	public static function enqueue(){
+		if( !is_admin()){
+			wp_enqueue_script( 'angular',  TMPL_PATH . '/bower_components/angular/angular.min.js' , null , null, true  );
+			wp_enqueue_script( 'ng-app',  TMPL_PATH . '/assets/js/ng-app.js' , null , null, true  );
+			wp_enqueue_style( 'mag-app-custom',  TMPL_PATH . '/assets/css/custom.css' );
+		}
+	}	
+
+	public static function add_actions(){
+		add_action( 'init', ['Atw_app', 'extend_init'] , 2, 100 );
+		if( trying_to( 'test-menu' , 'get' )){
+			add_action( 'avada_header',  ['Atw_app', 'add_menu_items'], 3, 999 );
+		}
+		/*
+		add_action('pods_api_pre_save_pod_item_run', array('Atw_app', 'pods_api_pre_save_pod_item_run'),999, 3); 
+		add_action('pods_api_pre_save_pod_item_user', array('Atw_app', 'pods_api_pre_save_pod_item_user'),999, 3); 
+		*/
+		
+	}
+
+	public static function add_shortcodes(){
+		add_shortcode( 'total-distance', ['Atw_app', 'get_total_distance_shortcode']  );	
+		add_shortcode( 'total-runs', ['Atw_app', 'get_total_runs_shortcode']  );	
+	
+	}
+
+
+	public static function getUserStats(){
+		$user = wp_get_current_user(  );
+		$userStats = pods('user')->find( ['where'=> "`t`.`id` = '{$user->ID}'"])->data();
+		if( $userStats = return_if( $userStats, 0 )){
+			$userStats = (object )[
+				'id'=> $userStats->ID,
+				'distance_total'=> $userStats->distance_total,
+				'runs_total'=> $userStats->runs_total,
+			];
+		}
+		return $userStats;
 	}
 
 	public static function get_total_runs( $local = true ){
@@ -153,7 +190,21 @@ class Atw_app{
 			
 		}
 	
+	public static function add_menu_items(){
+		wp_enqueue_script( 'mag-run-menu-component',  TMPL_PATH .'/assets/js/component.mag-run-menu.js' , null , null, true  );
+		echo Loader::partial( 'partials/component-mag-run-menu');
+	}
 		
+
+	public static function get_var( $key ){
+		return return_if( 
+			[
+				'link_login' =>"/mp-login",
+				'link_register' =>"/join-now",
+				'link_account' =>"/mp-account"
+			], 
+		$key );
+	}
 
 	
 	

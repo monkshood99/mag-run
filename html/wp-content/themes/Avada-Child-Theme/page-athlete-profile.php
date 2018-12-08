@@ -14,15 +14,7 @@
 // 	wp_enqueue_script( 'member-page',  TMPL_PATH .'/assets/js/vue.member-profile.js' , null , null, true  );
 
 
-	$user = wp_get_current_user(  );
-	$userStats = pods('user')->find( ['where'=> "`t`.`id` = '{$user->ID}'"])->data();
-	if( $userStats = return_if( $userStats, 0 )){
-		$userStats = (object )[
-			'id'=> $userStats->ID,
-			'distance_total'=> $userStats->distance_total,
-			'runs_total'=> $userStats->runs_total,
-		];
-	}
+	$userStats = Atw_app::getUserStats();
 ?>
 
 <pre>These are the global values : can be used on the homepage ( Will update on refresh )</pre>
@@ -30,7 +22,7 @@
 <?= apply_filters( 'the_content', "[total-distance] Miles Total" );?>
 
 <?php the_content();?>
-	<div class="bootstrap-wrapper" ng-app="WebsiteApp">
+	<div class="bootstrap-wrapper" >
 		<div class="container" athlete-calendar target="#calendar" user-stats='<?= json_encode_attr( $userStats);?>' >
 			<div class = 'row'>
 				<div class= 'col'>
@@ -45,7 +37,7 @@
 			</div>
 			<div class="row">
 				<div class="col-md-4">
-					<div  user-id="<?= $user->ID;?>">
+					<div  user-id="<?= $userStats->ID;?>">
 						
 						<form ng-submit="$ctrl.addRun()">
 							<h3>Post My Run</h3>
