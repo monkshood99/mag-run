@@ -17,13 +17,15 @@ class Atw_app{
 		if( trying_to( 'mag::post-my-run' , 'request' )) static::post_my_run();
 		if( trying_to( 'mag::get-my-runs' , 'request' )) static::get_my_runs();
 		if( trying_to( 'mag::get-total-runs' , 'request' )) static::get_total_runs(false);
-		if( trying_to( 'mag::get-total-distance' , 'request' )) static::get_total_distance(false);
+		if( trying_to( 'mag::get-total-distance' , 'request' )) static::get_totals(false, return_if( $_REQUEST, 'unit'));
+		if( trying_to( 'mag::post-to-facebook' , 'request' )) static::post_to_facebook();
 	}
 
 	public static function enqueue(){
 		if( !is_admin()){
 			wp_enqueue_script( 'angular',  TMPL_PATH . '/bower_components/angular/angular.min.js' , null , null, true  );
 			wp_enqueue_script( 'ng-app',  TMPL_PATH . '/assets/js/ng-app.js' , null , null, true  );
+			wp_enqueue_script( 'mag-run-service',  TMPL_PATH . '/assets/js/service.mag-run.js' , null , null, true  );
 			wp_enqueue_style( 'mag-app-custom',  TMPL_PATH . '/assets/css/custom.css' );
 		}
 	}	
@@ -43,21 +45,21 @@ class Atw_app{
 	public static function add_shortcodes(){
 		add_shortcode( 'total-distance', ['Atw_app', 'get_total_distance_shortcode']  );	
 		add_shortcode( 'total-runs', ['Atw_app', 'get_total_runs_shortcode']  );	
+		add_shortcode( 'mag-totals', ['Atw_app', 'get_totals_shortcode']  );	
 	
 	}
 
 
-	public static function getUserStats(){
+	public static function getUserStats($internal = true ){
 		$user = wp_get_current_user(  );
-		$userStats = pods('user')->find( ['where'=> "`t`.`id` = '{$user->ID}'"])->data();
-		if( $userStats = return_if( $userStats, 0 )){
-			$userStats = (object )[
-				'id'=> $userStats->ID,
-				'distance_total'=> $userStats->distance_total,
-				'runs_total'=> $userStats->runs_total,
-			];
+		$userStats = false;
+		if( $user ){
+			$totals = Atw_app::get_user_totals( $user->ID );
+			$totals->id = $user->ID;
+			$userStats = $totals;
 		}
-		return $userStats;
+		if( $internal ) return $userStats;
+		else return_json( compact( 'userStats') );
 	}
 
 	public static function get_total_runs( $local = true ){
@@ -67,22 +69,42 @@ class Atw_app{
 		else return_json( compact( 'total'));
 	}
 
-	public static function get_total_distance( $local = true ){
+	public static function get_totals( $local = true , $unit = 'mi' ){
 		global $wpdb;
-		$total = $wpdb->get_var( "SELECT sum( distance ) as 'total' from `{$wpdb->base_prefix}pods_run`;");
+		$total = $wpdb->get_row( "SELECT COUNT(`id`) as `runs_total` ,FORMAT(SUM(kilometers),1) as `km_total` , FORMAT(SUM(miles),1) as `mi_total`  from `{$wpdb->base_prefix}pods_run`;");
 		if( $local ) return $total;
 		else return_json( compact( 'total'));
 	}
 	
+	public static function get_user_totals( $user_id = false ){
+		$where.=" `user`.`id` = '{$user_id}' OR `user_id` = '{$user_id}' ";
+		$runs 	= pods( 'run')->find( [ 'select'=> 'COUNT(`t`.`id`) as `runs_total` ,FORMAT(SUM(kilometers),1) as `km_total` , FORMAT(SUM(miles),1) as `mi_total`' , 'where'=>  $where , 'limit'=> '-1' ]  )->data();
+		$data = return_if( $runs, 0 );
+		return $data;
+	}
+
 	public static function get_total_runs_shortcode( $atts ) {
-		return static::get_total_runs( true );
+		$totals = static::get_totals( true );
+		return $totals->runs_total;
 	}
 
 	public static function get_total_distance_shortcode( $atts ) {
-		return static::get_total_distance( true );
+		$unit = return_if( $atts, 'unit', 'mi'); 
+		$totals = static::get_totals( true , $unit  );
+		if( $unit == 'mi') return $totals->mi_total;
+		if( $unit == 'km') return $totals->km_total;
 	}
 
-	
+
+	public static function get_totals_shortcode( $atts ) {
+		$unit = return_if( $atts, 'unit');
+		$totals = static::get_totals( true  );
+		if( $unit == 'mi') return $totals->mi_total;
+		if( $unit == 'km') return $totals->km_total;
+		if( $unit == 'runs') return $totals->runs_total;
+	}
+
+
 	
 	public static function post_my_run(){
 		$data = mx_POST();
@@ -91,26 +113,27 @@ class Atw_app{
 		if( !$user_id = return_if( $data, 'user_id' ))$errors[]= 'Invalid User';
 		if( empty( $errors )){
 			$data->run_date = date( 'Y-m-d' , strtotime( $data->run_date ));
+
+			if( return_if( $data, 'unit') == 'mi') {
+				$data->miles = $data->distance;
+				$data->kilometers = $data->distance * 1.60934;	
+			}
+			if( return_if( $data, 'unit' == 'km')){
+				$data->miles = $data->distance;
+				$data->kilometers = $data->distance * .621371;
+			}
 			$success = pods('run')->save( $data );
 			if( $success ){
-				$user = pods('user')->find( ['where'=> "`t`.`id` = '{$user_id}'"])->data();
-				if( $user = return_if( $user , 0 )  ){
-					$user_data = [
-						'id' => $user_id,
-						'runs_total' => $user->runs_total += 1,
-						'distance_total' => $user->distance_total += $data->distance
-					];
-					pods('user')->save( $user_data );
-				}
 				$new_run = [
-					'title' => $data->distance . ' mi',
+					'title' => $data->distance . ' ' .$data->unit,
 					'start' => date( 'Y-m-d 00:00:00', strtotime( $data->run_date)) ,
 					'end' => date( 'Y-m-d 11:59:59', strtotime( $data->run_date)) 
 				];
 			}
 		}
-		return_json ( compact( 'save_data' , 'success' , 'user_data' , 'new_run'));
+		return_json ( compact( 'save_data' , 'success' , 'data' , 'new_run'));
 	}
+
 
 	
 	public static function pods_api_pre_save_pod_item_run($pieces, $is_new_item, $id){
@@ -206,6 +229,40 @@ class Atw_app{
 		$key );
 	}
 
+	public static function post_to_facebook(){
+		require_once ATW_DIR . 'lib/Facebook/Facebook.php';
+
+		$fb = new \Facebook\Facebook([
+		  'app_id' => '257135764955242',
+		  'app_secret' => 'EAAZAAkZCe8OCYBAJzzlwEZCLmwsWTJWn8igVnH9LtdjZAGSaFu0I7WJYmZB69DZClHXRzx8XZA0ZBDR5EfPV1gB1PeSwRu6P2iSlP9EZCyRSITsKpbcuqseHorJPysEkmQ7MWtnHdxNiMdD9fXZCntczsGMdhY7ZABBaj3P1lPoSzRka35sMqSHbNXvZAeUQO7IhWqIZD',
+		  'default_graph_version' => 'v2.10',
+		  //'default_access_token' => '{access-token}', // optional
+		]);
+		
+		// Use one of the helper classes to get a Facebook\Authentication\AccessToken entity.
+		//   $helper = $fb->getRedirectLoginHelper();
+		//   $helper = $fb->getJavaScriptHelper();
+		//   $helper = $fb->getCanvasHelper();
+		//   $helper = $fb->getPageTabHelper();
+		
+		try {
+		  // Get the \Facebook\GraphNodes\GraphUser object for the current user.
+		  // If you provided a 'default_access_token', the '{access-token}' is optional.
+		  $response = $fb->get('/me', '{access-token}');
+		} catch(\Facebook\Exceptions\FacebookResponseException $e) {
+		  // When Graph returns an error
+		  echo 'Graph returned an error: ' . $e->getMessage();
+		  exit;
+		} catch(\Facebook\Exceptions\FacebookSDKException $e) {
+		  // When validation fails or other local issues
+		  echo 'Facebook SDK returned an error: ' . $e->getMessage();
+		  exit;
+		}
+		
+		$me = $response->getGraphUser();
+		echo 'Logged in as ' . $me->getName();
+		
+	}
 	
 	
 }

@@ -3,8 +3,8 @@
 		var eba = angular.module( 'WebsiteApp' );
 		
 		
-		eba.directive( 'athleteCalendar', [ '$http', '$timeout', '$rootScope', '$injector', '$q', 
-		function( $http , $timeout, $rootScope, $injector , $q ){ 
+		eba.directive( 'athleteCalendar', [ '$http', '$timeout', '$rootScope', '$injector', '$q', 'MagRunService',
+		function( $http , $timeout, $rootScope, $injector , $q, MRS ){ 
 			return {
 				"scope" : { userId : "=" ,  userStats : "="},
 				'template' : function(){},
@@ -12,9 +12,10 @@
 				},
 				'controller' : function( $scope, $element , $attrs ){ 
 					var $ctrl = $scope.$ctrl  = this
+					$ctrl.MRS = MRS;
 					
 					$ctrl.$onInit = function(){
-						$ctrl.userStats = $scope.userStats;
+						$ctrl.MRS.userStats = $scope.userStats;
 						
 						$ctrl.run_data = {
 							run_date : new Date(),
@@ -93,19 +94,21 @@
 */
 						});
 					}// create calendar
+
 					
 					$ctrl.addRun = function(){
-						$http.post( '/?mag::post-my-run', $ctrl.run_data).then(
-							function( response ){
-								if( response.data.success ){
-									$ctrl.userStats.distance_total = response.data.user_data.distance_total;
-									$ctrl.userStats.runs_total = response.data.user_data.runs_total;
-									$ctrl.cal.fullCalendar('renderEvent', response.data.new_run, true);
+						$ctrl.MRS.addRun( $ctrl.run_data ).then( 
+							function( response ){	
+								console.log( response  )
+								if( response.success ){
+									$ctrl.cal.fullCalendar('renderEvent', response.new_run, true);
 								}
-							},
-							function(){}
+							}, 
+							function( response ){console.log( response ) }
 						)
 					}
+
+				
 					
 					$ctrl.eventClick = function(calEvent, jsEvent, view) {
 						if( view.type == 'month'){
@@ -143,7 +146,27 @@
 					$ctrl.postToFb = function( event ){
 						var data = jQuery( this ).data();
 						var message = "Post This To Facebook (I ran : " +  data.run_data.distance + "mi on " + data.run_data.run_date + ")";
-						alert( message )
+
+						var $post = {
+							method: 'share_open_graph',
+							action_type: 'og.shares',
+							action_properties: JSON.stringify({
+								object : {
+									'og:url': "https://magnoliarunning.com", // your url to share
+									'og:title': "I Ran Today",
+									'og:site_name':'magnolia Running',
+									'og:description':'I ran today',
+									'og:image': 'https://magnoliarunning.com/wp-content/themes/Avada-Child-Theme/assets/img/run-more.jpg',
+									'og:image:width':'1038',//size of image in pixel
+									'og:image:height':'353'
+								}
+								})
+							};
+						FB.ui( $post , function(response){ 
+							console.log("response is ",response);
+						});
+
+
 					}
 					
 					/**
@@ -173,9 +196,8 @@
 						$http.post( '/?mag::get-my-runs', { start : start, end : end , timezone : timezone  , user_id : $scope.userId })
 						.then( 
 							function( response ){ 
-								console.log( response );
-						    $ctrl.start = $ctrl.cal.fullCalendar('getCalendar').view.start.format('MMM Do \'YY');
-						    $ctrl.end = $ctrl.cal.fullCalendar('getCalendar').view.start.format('MMM Do \'YY');
+						    	$ctrl.start = $ctrl.cal.fullCalendar('getCalendar').view.start.format('MMM Do \'YY');
+						    	$ctrl.end = $ctrl.cal.fullCalendar('getCalendar').view.start.format('MMM Do \'YY');
 								if( response.data.success ){
 // 									console.log( 'getting event source' )
 									$ctrl.events = response.data.events;

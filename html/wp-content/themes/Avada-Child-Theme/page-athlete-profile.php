@@ -18,8 +18,9 @@
 ?>
 
 <pre>These are the global values : can be used on the homepage ( Will update on refresh )</pre>
-<?= apply_filters( 'the_content', "[total-runs] Total Runs" );?>
-<?= apply_filters( 'the_content', "[total-distance] Miles Total" );?>
+<?= apply_filters( 'the_content', "[mag-totals unit='runs'] Runs Total" );?>
+<?= apply_filters( 'the_content', "[mag-totals unit='km'] Kilometers Total" );?>
+<?= apply_filters( 'the_content', "[mag-totals unit='mi'] Miles Total" );?>
 
 <?php the_content();?>
 	<div class="bootstrap-wrapper" >
@@ -29,10 +30,10 @@
 					<h3>My Stats</h3>
 				</div>
 				<div class = 'col'>
-					<h4>Total Runs: <small>{{$ctrl.userStats.runs_total ? $ctrl.userStats.runs_total : 0}}</small></h4>
+					<h4>Total Runs: <small>{{$ctrl.MRS.userStats.runs_total ? $ctrl.MRS.userStats.runs_total : 0}}</small></h4>
 				</div>
 				<div class = 'col'>
-					<h4>Total Distance: <small>{{$ctrl.userStats.distance_total ? $ctrl.userStats.distance_total : 0 }} mi</small></h4>
+					<h4>Total Distance: <small>{{$ctrl.MRS.userStats.mi_total | number:1}} mi /{{$ctrl.MRS.userStats.km_total | number:1 }} km</small></h4>
 				</div>
 			</div>
 			<div class="row">
@@ -43,14 +44,18 @@
 							<h3>Post My Run</h3>
 							<p>
 								<label>Distance</label><br/>
-								<input type = 'number' ng-model="$ctrl.run_data.distance" name="distance" />
+								<input type="number" step="0.1" ng-model="$ctrl.run_data.distance" name="distance"  />
 							</p>
 							<p>
 								<label>Date</label><br/>
 								<input type = 'date' ng-model="$ctrl.run_data.run_date" name="distance" />
 							</p>
 							<p>
-							  <button type = 'submit' class = 'wpcf7-form-control wpcf7-submit'>Post It!</button>
+							  <button type = 'submit' class = 'wpcf7-form-control wpcf7-submit'>
+								<span ng-show="$ctrl.MRS.posting">Posting</span>
+    						   	<span ng-show="$ctrl.MRS.success">Posted!</span>
+							    <span ng-hide="$ctrl.MRS.success || $ctrl.MRS.posting ">Post It!</span>
+							  </button>
 							</p>
 						</form>
 					</div>
@@ -68,4 +73,26 @@
 		"today" : "<?= date( 'Y-m-d' , strtotime( 'today' ) ) ;?>" 
 	}	
 </script>
+
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId            : '257135764955242',
+      autoLogAppEvents : true,
+      xfbml            : true,
+      version          : 'v2.10'
+    });
+    FB.AppEvents.logPageView();
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
 <?php get_footer(); ?>
