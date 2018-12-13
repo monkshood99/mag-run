@@ -169,6 +169,10 @@
 
 					}
 					
+					$ctrl.week_events = {
+						
+					}
+					
 					/**
 					 * render the events
 					 * 
@@ -177,6 +181,8 @@
 					 */
 					$ctrl.eventRender = function(event, element, view) {
 						var date = moment( event.start ).format( 'YYYY-M-DD');
+						var start_of_week = moment( event.start ).startOf('week').format( 'YYYY-M-DD');
+						console.log( start_of_week );
 						jQuery("[data-date='"+date+"']").addClass( 'has-events')
 						element.addClass( 'has-event');
 						var fb_button = jQuery('<button/>', {

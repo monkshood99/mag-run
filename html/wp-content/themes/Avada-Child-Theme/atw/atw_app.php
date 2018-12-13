@@ -77,9 +77,31 @@ class Atw_app{
 	}
 	
 	public static function get_user_totals( $user_id = false ){
+		$default_totals = ( object) [ 'runs_total'=> 0, 'km_total' => 0, 'mi_total'=> 0 ];
+
 		$where.=" `user`.`id` = '{$user_id}' OR `user_id` = '{$user_id}' ";
 		$runs 	= pods( 'run')->find( [ 'select'=> 'COUNT(`t`.`id`) as `runs_total` ,FORMAT(SUM(kilometers),1) as `km_total` , FORMAT(SUM(miles),1) as `mi_total`' , 'where'=>  $where , 'limit'=> '-1' ]  )->data();
-		$data = return_if( $runs, 0 );
+		$data = return_if( $runs, 0 , $default_totals );
+		
+
+		// get runs of this week 
+		$day = date('w');
+		$start = date('Y-m-d', strtotime('-'.$day.' days'));
+		$end = date('Y-m-d', strtotime('+'.(6-$day).' days'));
+		$where = "`run_date` >= '{$start}' AND `run_date` <= '{$end}' AND ( `user`.`id` = '{$data->user_id}' OR `user_id` = '{$user_id}') ";
+		$this_week 	= pods( 'run')->find( [ 'select'=> 'COUNT(`t`.`id`) as `runs_total` ,FORMAT(SUM(kilometers),1) as `km_total` , FORMAT(SUM(miles),1) as `mi_total` ' , 'where'=>  $where , 'limit'=> '-1' ]  )->data();
+		$this_week = return_if( $this_week, 0  , $default_totals  );
+		
+		$start = date('Y-m-d', strtotime('1/01'));
+		$end = date('Y-m-d', strtotime('12/31'));
+		$where = "`run_date` >= '{$start}' AND `run_date` <= '{$end}' AND ( `user`.`id` = '{$data->user_id}' OR `user_id` = '{$user_id}') ";
+		$this_year 	= pods( 'run')->find( [ 'select'=> 'COUNT(`t`.`id`) as `runs_total` ,FORMAT(SUM(kilometers),1) as `km_total` , FORMAT(SUM(miles),1) as `mi_total` ' , 'where'=>  $where , 'limit'=> '-1' ]  )->data();
+		$this_year = return_if( $this_year, 0  , $default_totals  );
+		
+		$data->all_time = json_decode( json_encode( $data )) ;
+		$data->this_week = $this_week;
+		$data->this_year = $this_year;
+		
 		return $data;
 	}
 

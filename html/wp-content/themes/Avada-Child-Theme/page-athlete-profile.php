@@ -29,17 +29,17 @@
 		</div>
 		<div class = 'row text-center'>
 			<div class = 'col'>
-				<h1 class = 'mg-display-1'>63</h1>
+				<h1 class = 'mg-display-1'>{{$ctrl.MRS.userStats.runs_total}}</h1>
 				<div class="mg-h2 text-upper">Total Runs</div>
-				<h4 class = 'mg-h4'>This year.</h4>
+				<h4 class = 'mg-h4'>All Time. <span class = 'fa fas fa-caret-down'></span></h4>
 			</div>
 			<div class = 'col'>
-				<h1 class = 'mg-display-1'>263</h1>
+				<h1 class = 'mg-display-1'>{{$ctrl.MRS.userStats.mi_total}}</h1>
 				<div class="mg-h2 text-upper">Total Miles</div>
-				<h4 class = 'mg-h4'>This year.</h4>
+				<h4 class = 'mg-h4'>All Time.</h4>
 			</div>
-			<div class = 'col'>
-				<h1 class = 'mg-display-1'>4</h1>
+			<div class = 'col {{ $ctrl.MRS.userStats.this_week.runs_total >= 4 ? "success" : ""}}'>
+				<h1 class = 'mg-display-1'>{{$ctrl.MRS.userStats.this_week.runs_total}}</h1>
 				<div class="mg-h2 text-upper">Runs This Week</div>
 				<h4 class="mg-h4">Shoot for 4!</h4>
 			</div>
