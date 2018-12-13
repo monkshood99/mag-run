@@ -26,7 +26,7 @@ class Atw_app{
 			wp_enqueue_script( 'angular',  TMPL_PATH . '/bower_components/angular/angular.min.js' , null , null, true  );
 			wp_enqueue_script( 'ng-app',  TMPL_PATH . '/assets/js/ng-app.js' , null , null, true  );
 			wp_enqueue_script( 'mag-run-service',  TMPL_PATH . '/assets/js/service.mag-run.js' , null , null, true  );
-			wp_enqueue_style( 'mag-app-custom',  TMPL_PATH . '/assets/css/custom.css' );
+			wp_enqueue_style( 'mag-app-screen',  TMPL_PATH . '/assets/css/screen.css' );
 		}
 	}	
 

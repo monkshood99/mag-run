@@ -17,13 +17,80 @@
 	$userStats = Atw_app::getUserStats();
 ?>
 
-<pre>These are the global values : can be used on the homepage ( Will update on refresh )</pre>
-<?= apply_filters( 'the_content', "[mag-totals unit='runs'] Runs Total" );?>
-<?= apply_filters( 'the_content', "[mag-totals unit='km'] Kilometers Total" );?>
-<?= apply_filters( 'the_content', "[mag-totals unit='mi'] Miles Total" );?>
 
-<?php the_content();?>
-	<div class="bootstrap-wrapper" >
+<div class="bootstrap-wrapper full-width" athlete-calendar target="#calendar" user-stats='<?= json_encode_attr( $userStats);?>' >
+	<div class = 'container'>
+		<div class="row">
+			<div class="col-6 offset-3 text-center ">
+				<div class = 'beetle beetle-circle bkg-yellow mx-auto '><span class="icon-beetle"></span></div>
+				<h1 class = 'mg-h1'>Justin Case</h1>
+				<h4 class = mg-h4><i class="glyphicon fa-map-marker fas text-yellow"></i>Boulder, Co</h4>
+			</div>
+		</div>
+		<div class = 'row text-center'>
+			<div class = 'col'>
+				<h1 class = 'mg-display-1'>63</h1>
+				<div class="mg-h2 text-upper">Total Runs</div>
+				<h4 class = 'mg-h4'>This year.</h4>
+			</div>
+			<div class = 'col'>
+				<h1 class = 'mg-display-1'>263</h1>
+				<div class="mg-h2 text-upper">Total Miles</div>
+				<h4 class = 'mg-h4'>This year.</h4>
+			</div>
+			<div class = 'col'>
+				<h1 class = 'mg-display-1'>4</h1>
+				<div class="mg-h2 text-upper">Runs This Week</div>
+				<h4 class="mg-h4">Shoot for 4!</h4>
+			</div>
+		</div><!-- // row --> 
+	</div><!-- // container --> 
+
+	<div class = 'horizontal-section-bar'>
+		<h1 class = 'horizontal-section-title text-white text-upper'>Run Tracker</h1>
+	</div>
+	<div class='container'>
+		<form ng-submit="$ctrl.addRun()" class = 'mb-5 '>
+			<div class = 'row text-center'>
+				<div class = 'col'>
+					<h1 class = 'mg-h2 text-uppe'>Date</h1>
+					<div class="mg-h4 mb-2">What day did you run?</div>
+					<input type = 'date' ng-model="$ctrl.run_data.run_date" name="distance" />
+				</div>
+				<div class = 'col'>
+					<h1 class = 'mg-h2 text-upper'>Distance</h1>
+					<div class="mg-h4 mb-2">How far did you run? (in miles)</div>
+					<input type = 'number' step="0.1" ng-model="$ctrl.run_data.distance" name="distance" />
+				</div>
+				<div class = 'col'>
+					<h1 class = 'mg-h2 text-upper'>Pace</h1>
+					<div class="mg-h4 mb-2">Minutes per mile.</div>
+					<input type = 'date' ng-model="$ctrl.run_data.minutes" name="minutes" />
+				</div>
+	
+				<div class="col-6 offset-3 text-center mt-2">
+					<button type = 'submit' class = 'mg-btn bkg-yellow btn-xl'>
+							<small><span ng-show="$ctrl.MRS.posting" class = 'fa-refresh fa-spin fas fa'></span></small>
+							<span ng-show="$ctrl.MRS.success">Posted!</span>
+							<span ng-hide="$ctrl.MRS.success || $ctrl.MRS.posting ">Post It!</span>
+					</button>
+				</div>
+	
+			</div>
+		</form><!-- // form container --> 
+			
+		<div id='calendar'></div>
+	</div>
+	
+	<div class = 'horizontal-section-bar'>
+		<h1 class = 'horizontal-section-title text-white text-upper'>Run Tracker</h1>
+	</div>
+</div><!-- // athlete calendar --> 
+			
+
+<h1>Old Markup </h1>
+
+<div class="bootstrap-wrapper" >
 		<div class="container" athlete-calendar target="#calendar" user-stats='<?= json_encode_attr( $userStats);?>' >
 			<div class = 'row'>
 				<div class= 'col'>
@@ -66,6 +133,7 @@
 			</div>
 		</div>
 	</div>
+
 
 	
 <script>

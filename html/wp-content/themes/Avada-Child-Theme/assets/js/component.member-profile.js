@@ -13,7 +13,6 @@
 				'controller' : function( $scope, $element , $attrs ){ 
 					var $ctrl = $scope.$ctrl  = this
 					$ctrl.MRS = MRS;
-					
 					$ctrl.$onInit = function(){
 						$ctrl.MRS.userStats = $scope.userStats;
 						
@@ -74,8 +73,9 @@
 	
 						$ctrl.cal = jQuery( $attrs.target ).fullCalendar({
 							events: $ctrl.eventSource,
-							defaultView :'listWeek',
-							header : { left: 'prev month listWeek basicWeek', center: 'title',right: 'today next' },
+							defaultView :'month',
+// 							defaultView :'listWeek',
+							header : { left: '',  center: 'prev title next' , right : '' },
 			        loading: $ctrl.eventsLoding,
 					    dayClick: $ctrl.dayClick,
 							eventRender: $ctrl.eventRender ,
@@ -176,6 +176,9 @@
 					 * @access public
 					 */
 					$ctrl.eventRender = function(event, element, view) {
+						var date = moment( event.start ).format( 'YYYY-M-DD');
+						jQuery("[data-date='"+date+"']").addClass( 'has-events')
+						element.addClass( 'has-event');
 						var fb_button = jQuery('<button/>', {
 								type : 'button',
 						    html: 'FB->',

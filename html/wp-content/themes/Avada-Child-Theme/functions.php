@@ -11,4 +11,4 @@ function avada_lang_setup() {
 }
 add_action( 'after_setup_theme', 'avada_lang_setup' );
 
-require_once('atw/init.php');
+//require_once('atw/init.php');
