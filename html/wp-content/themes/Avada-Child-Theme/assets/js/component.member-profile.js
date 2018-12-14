@@ -15,12 +15,20 @@
 					$ctrl.MRS = MRS;
 					$ctrl.$onInit = function(){
 						$ctrl.MRS.userStats = $scope.userStats;
-						
+						$ctrl.run_time_options = [
+							{ 'label' : 'THis Week' , 'value' : 'this_week'},
+							{ 'label' : 'THis Year' , 'value' : 'this_year'},
+							{ 'label' : 'All Time' , 'value' : 'all_time'},
+						]
+						$ctrl.runs_total_time = $ctrl.run_time_options[0];
 						$ctrl.run_data = {
 							run_date : new Date(),
 							distance : 0,
 							user : $scope.userStats.id,
 							user_id : $scope.userStats.id
+						}
+						$ctrl.set_run_option = function( o , k){
+							console.log( o, k )
 						}
 
 /*
@@ -43,6 +51,9 @@
 						
 						$ctrl.createCalendar();
 						
+					}
+					$ctrl.change_period = function(){
+						$ctrl.runs_total_time = o						
 					}
 					
 					/**

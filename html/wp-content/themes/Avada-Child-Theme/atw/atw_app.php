@@ -23,10 +23,12 @@ class Atw_app{
 
 	public static function enqueue(){
 		if( !is_admin()){
-			wp_enqueue_script( 'angular',  TMPL_PATH . '/bower_components/angular/angular.min.js' , null , null, true  );
-			wp_enqueue_script( 'ng-app',  TMPL_PATH . '/assets/js/ng-app.js' , null , null, true  );
-			wp_enqueue_script( 'mag-run-service',  TMPL_PATH . '/assets/js/service.mag-run.js' , null , null, true  );
-			wp_enqueue_style( 'mag-app-screen',  TMPL_PATH . '/assets/css/screen.css' );
+			add_action( 'wp_enqueue_scripts' , function(){
+				wp_enqueue_script( 'angular',  TMPL_PATH . '/bower_components/angular/angular.min.js' , null , null, true  );
+				wp_enqueue_script( 'ng-app',  TMPL_PATH . '/assets/js/ng-app.js' , null , null, true  );
+				wp_enqueue_script( 'mag-run-service',  TMPL_PATH . '/assets/js/service.mag-run.js' , null , null, true  );
+				wp_enqueue_style( 'mag-app-screen',  TMPL_PATH . '/assets/css/screen.css' );
+			} , 99 , 99 );
 		}
 	}	
 
@@ -58,6 +60,7 @@ class Atw_app{
 			$totals->id = $user->ID;
 			$userStats = $totals;
 		}
+		$userStats->user = $user->data;
 		if( $internal ) return $userStats;
 		else return_json( compact( 'userStats') );
 	}
@@ -79,7 +82,8 @@ class Atw_app{
 	public static function get_user_totals( $user_id = false ){
 		$default_totals = ( object) [ 'runs_total'=> 0, 'km_total' => 0, 'mi_total'=> 0 ];
 
-		$where.=" `user`.`id` = '{$user_id}' OR `user_id` = '{$user_id}' ";
+		// get all runs
+		$where=" `user`.`id` = '{$user_id}' OR `user_id` = '{$user_id}' ";
 		$runs 	= pods( 'run')->find( [ 'select'=> 'COUNT(`t`.`id`) as `runs_total` ,FORMAT(SUM(kilometers),1) as `km_total` , FORMAT(SUM(miles),1) as `mi_total`' , 'where'=>  $where , 'limit'=> '-1' ]  )->data();
 		$data = return_if( $runs, 0 , $default_totals );
 		
@@ -88,13 +92,14 @@ class Atw_app{
 		$day = date('w');
 		$start = date('Y-m-d', strtotime('-'.$day.' days'));
 		$end = date('Y-m-d', strtotime('+'.(6-$day).' days'));
-		$where = "`run_date` >= '{$start}' AND `run_date` <= '{$end}' AND ( `user`.`id` = '{$data->user_id}' OR `user_id` = '{$user_id}') ";
+		$where = "`run_date` >= '{$start}' AND `run_date` <= '{$end}' AND ( `user`.`id` = '{$user_id}' OR `user_id` = '{$user_id}') ";
 		$this_week 	= pods( 'run')->find( [ 'select'=> 'COUNT(`t`.`id`) as `runs_total` ,FORMAT(SUM(kilometers),1) as `km_total` , FORMAT(SUM(miles),1) as `mi_total` ' , 'where'=>  $where , 'limit'=> '-1' ]  )->data();
 		$this_week = return_if( $this_week, 0  , $default_totals  );
 		
+		// get runs of this year 
 		$start = date('Y-m-d', strtotime('1/01'));
 		$end = date('Y-m-d', strtotime('12/31'));
-		$where = "`run_date` >= '{$start}' AND `run_date` <= '{$end}' AND ( `user`.`id` = '{$data->user_id}' OR `user_id` = '{$user_id}') ";
+		$where = "`run_date` >= '{$start}' AND `run_date` <= '{$end}' AND ( `user`.`id` = '{$user_id}' OR `user_id` = '{$user_id}') ";
 		$this_year 	= pods( 'run')->find( [ 'select'=> 'COUNT(`t`.`id`) as `runs_total` ,FORMAT(SUM(kilometers),1) as `km_total` , FORMAT(SUM(miles),1) as `mi_total` ' , 'where'=>  $where , 'limit'=> '-1' ]  )->data();
 		$this_year = return_if( $this_year, 0  , $default_totals  );
 		
@@ -144,7 +149,10 @@ class Atw_app{
 				$data->miles = $data->distance;
 				$data->kilometers = $data->distance * .621371;
 			}
-			$success = pods('run')->save( $data );
+			$data->pace_km = $data->minutes / $data->kilometers;
+			$data->pace_mi = $data->minutes / $data->miles;
+		
+			$success = pods('run')->save( ( array ) $data );
 			if( $success ){
 				$new_run = [
 					'title' => $data->distance . ' ' .$data->unit,
@@ -152,8 +160,9 @@ class Atw_app{
 					'end' => date( 'Y-m-d 11:59:59', strtotime( $data->run_date)) 
 				];
 			}
+			$userStats = static::get_user_totals( $user_id );
 		}
-		return_json ( compact( 'save_data' , 'success' , 'data' , 'new_run'));
+		return_json ( compact( 'save_data' , 'success' , 'data' , 'new_run' , 'userStats'));
 	}
 
 

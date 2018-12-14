@@ -1,7 +1,7 @@
 ( function(){
     var app = angular.module( 'WebsiteApp' );
 
-    app.service( "MagRunService", [ '$q', '$http', function( $q , $http ){
+    app.service( "MagRunService", [ '$q', '$http','$timeout', function( $q , $http , $timeout ){
         var $s = this;
 
         this.userStats = {}
@@ -13,10 +13,14 @@
                 function( response ){
                     $s.posting = false;
                     if( response.data.success ){
-                        $s.userStats.km_total =  parseFloat($s.userStats.km_total) + parseFloat(response.data.data.kilometers);
-                        $s.userStats.mi_total =  parseFloat($s.userStats.mi_total) + parseFloat(response.data.data.miles);
-                        $s.userStats.runs_total = parseInt($s.userStats.runs_total) + 1; 
+                        $s.userStats = response.data.userStats;
+                        // $s.userStats.km_total =  parseFloat($s.userStats.km_total) + parseFloat(response.data.data.kilometers);
+                        // $s.userStats.mi_total =  parseFloat($s.userStats.mi_total) + parseFloat(response.data.data.miles);
+                        // $s.userStats.runs_total = parseInt($s.userStats.runs_total) + 1; 
                         $s.success = true;
+                        $timeout( function() {
+                            $s.success = false;
+                        }, 350 );
                     }else{
                         $s.error = true;
                     }
