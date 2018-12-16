@@ -13,11 +13,12 @@
 				'controller' : function( $scope, $element , $attrs ){ 
 					var $ctrl = $scope.$ctrl  = this
 					$ctrl.MRS = MRS;
+					$ctrl.log_runs = [];
 					$ctrl.$onInit = function(){
 						$ctrl.MRS.userStats = $scope.userStats;
 						$ctrl.run_time_options = [
-							{ 'label' : 'THis Week' , 'value' : 'this_week'},
-							{ 'label' : 'THis Year' , 'value' : 'this_year'},
+							{ 'label' : 'This Week' , 'value' : 'this_week'},
+							{ 'label' : 'This Year' , 'value' : 'this_year'},
 							{ 'label' : 'All Time' , 'value' : 'all_time'},
 						]
 						$ctrl.runs_total_time = $ctrl.run_time_options[0];
@@ -50,7 +51,23 @@
 */
 						
 						$ctrl.createCalendar();
+						$ctrl.getLogRuns();
 						
+					}
+
+
+					$ctrl.getLogRuns = function(){
+						var $params = {
+							'user_id' : $ctrl.MRS.user_id
+						}
+						$ctrl.MRS.getLogRuns( $params  ).then( 
+							function( runs ){
+								$ctrl.log_runs = runs;
+							},
+							function( response ){
+
+							}
+						);
 					}
 					$ctrl.change_period = function(){
 						$ctrl.runs_total_time = o						
@@ -110,9 +127,9 @@
 					$ctrl.addRun = function(){
 						$ctrl.MRS.addRun( $ctrl.run_data ).then( 
 							function( response ){	
-								console.log( response  )
 								if( response.success ){
 									$ctrl.cal.fullCalendar('renderEvent', response.new_run, true);
+									$ctrl.getLogRuns();
 								}
 							}, 
 							function( response ){console.log( response ) }
@@ -134,10 +151,9 @@
 			    
 			    $ctrl.dayRender = function( date, cell ){}
 
-
 					$ctrl.dayClick = function(date, jsEvent, view) {
 			    	$ctrl.cal.fullCalendar('changeView', 'listDay');
-					  $ctrl.cal.fullCalendar('gotoDate', date );      
+					$ctrl.cal.fullCalendar('gotoDate', date );      
 			    }
 
 
@@ -150,9 +166,9 @@
 					 * @access public
 					 */
 					$ctrl.eventsLoading = function( isLoading, view ) {
-		        $ctrl.loading = isLoading;
+				        $ctrl.loading = isLoading;
 						$timeout( function(){ $scope.$apply() })
-	        }
+	    		    }
 					
 					$ctrl.postToFb = function( event ){
 						var data = jQuery( this ).data();
@@ -180,9 +196,7 @@
 
 					}
 					
-					$ctrl.week_events = {
-						
-					}
+					$ctrl.week_events = {}
 					
 					/**
 					 * render the events
@@ -191,10 +205,25 @@
 					 * @access public
 					 */
 					$ctrl.eventRender = function(event, element, view) {
-						var date = moment( event.start ).format( 'YYYY-M-DD');
-						var start_of_week = moment( event.start ).startOf('week').format( 'YYYY-M-DD');
-						console.log( start_of_week );
-						jQuery("[data-date='"+date+"']").addClass( 'has-events')
+						var start = moment( event.start ).startOf('week');
+						var start_of_week = start.format( 'YYYY-M-DD');
+						if( !$ctrl.week_events.hasOwnProperty( start_of_week ) ){
+							$ctrl.week_events[start_of_week] = { count : 0 , complete : false };
+						}
+						$ctrl.week_events[start_of_week].count += 1;
+						if( $ctrl.week_events[start_of_week].count >= 4 &&  $ctrl.week_events[start_of_week].complete  == false  ){
+							console.log( $ctrl.week_events);
+							jQuery("[data-date='"+start_of_week+"']").addClass( 'has-events')
+							// console.log('start of week' , start_of_week);
+							$ctrl.week_events[start_of_week].complete = true;
+							var i = 1;
+							while( i < 7){
+								var day = start.add( '1' , 'days').format( 'YYYY-M-DD');
+								// console.log( 'day' , day )
+								jQuery("[data-date='"+day+"']").addClass( 'has-events')
+								i++;
+							}
+						}
 						element.addClass( 'has-event');
 						var fb_button = jQuery('<button/>', {
 								type : 'button',
@@ -216,15 +245,32 @@
 						$http.post( '/?mag::get-my-runs', { start : start, end : end , timezone : timezone  , user_id : $scope.userId })
 						.then( 
 							function( response ){ 
+								$ctrl.week_events = {}
+								$ctrl.date_totals = {}
 						    	$ctrl.start = $ctrl.cal.fullCalendar('getCalendar').view.start.format('MMM Do \'YY');
 						    	$ctrl.end = $ctrl.cal.fullCalendar('getCalendar').view.start.format('MMM Do \'YY');
 								if( response.data.success ){
+									$ctrl.date_totals = response.data.date_totals;
+									for( var $date in $ctrl.date_totals ){
+										var $current = $ctrl.date_totals[$date];
+										var total_div = jQuery( 
+											'<div/>', 
+											{
+												'html' : '<h1 >'+ $current.miles +'</h1>',
+												'class' : 'fc-day-total'
+											}
+										)
+										total_div.appendTo( "[data-date='"+$date+"']");
+
+									}
 // 									console.log( 'getting event source' )
 									$ctrl.events = response.data.events;
 									callback( response.data.events );
 									$clientEvents = $ctrl.cal.fullCalendar('clientEvents');
 // 									$ctrl.eventsPreRender( $clientEvents );
 									$timeout( function(){ $q.resolve( response ); $scope.$apply() })
+								}else {
+									callback([]);
 								}
 							}, 
 							function(){  $q.reject( 'Failed to fetch events', response ); }

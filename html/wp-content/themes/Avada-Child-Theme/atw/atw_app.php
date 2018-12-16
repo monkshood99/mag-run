@@ -16,9 +16,12 @@ class Atw_app{
 	public static function extend_init(){
 		if( trying_to( 'mag::post-my-run' , 'request' )) static::post_my_run();
 		if( trying_to( 'mag::get-my-runs' , 'request' )) static::get_my_runs();
+		if( trying_to( 'mag::get-log-runs' , 'request' )) static::get_my_log();
 		if( trying_to( 'mag::get-total-runs' , 'request' )) static::get_total_runs(false);
 		if( trying_to( 'mag::get-total-distance' , 'request' )) static::get_totals(false, return_if( $_REQUEST, 'unit'));
 		if( trying_to( 'mag::post-to-facebook' , 'request' )) static::post_to_facebook();
+
+		
 	}
 
 	public static function enqueue(){
@@ -86,6 +89,8 @@ class Atw_app{
 		$where=" `user`.`id` = '{$user_id}' OR `user_id` = '{$user_id}' ";
 		$runs 	= pods( 'run')->find( [ 'select'=> 'COUNT(`t`.`id`) as `runs_total` ,FORMAT(SUM(kilometers),1) as `km_total` , FORMAT(SUM(miles),1) as `mi_total`' , 'where'=>  $where , 'limit'=> '-1' ]  )->data();
 		$data = return_if( $runs, 0 , $default_totals );
+		$data->km_total = is_numeric( $data->km_total ) ? $data->km_total : 0  ;
+		$data->mi_total = is_numeric( $data->mi_total ) ? $data->mi_total : 0   ;
 		
 
 		// get runs of this week 
@@ -95,6 +100,8 @@ class Atw_app{
 		$where = "`run_date` >= '{$start}' AND `run_date` <= '{$end}' AND ( `user`.`id` = '{$user_id}' OR `user_id` = '{$user_id}') ";
 		$this_week 	= pods( 'run')->find( [ 'select'=> 'COUNT(`t`.`id`) as `runs_total` ,FORMAT(SUM(kilometers),1) as `km_total` , FORMAT(SUM(miles),1) as `mi_total` ' , 'where'=>  $where , 'limit'=> '-1' ]  )->data();
 		$this_week = return_if( $this_week, 0  , $default_totals  );
+		$this_week->km_total = is_numeric( $this_week->km_total ) ? $this_week->km_total : 0   ;
+		$this_week->mi_total = is_numeric( $this_week->mi_total ) ? $this_week->mi_total : 0   ;
 		
 		// get runs of this year 
 		$start = date('Y-m-d', strtotime('1/01'));
@@ -102,6 +109,8 @@ class Atw_app{
 		$where = "`run_date` >= '{$start}' AND `run_date` <= '{$end}' AND ( `user`.`id` = '{$user_id}' OR `user_id` = '{$user_id}') ";
 		$this_year 	= pods( 'run')->find( [ 'select'=> 'COUNT(`t`.`id`) as `runs_total` ,FORMAT(SUM(kilometers),1) as `km_total` , FORMAT(SUM(miles),1) as `mi_total` ' , 'where'=>  $where , 'limit'=> '-1' ]  )->data();
 		$this_year = return_if( $this_year, 0  , $default_totals  );
+		$this_year->km_total = is_numeric( $this_year->km_total ) ? $this_year->km_total : 0  ; 
+		$this_year->mi_total = is_numeric( $this_year->mi_total ) ? $this_year->mi_total : 0  ;
 		
 		$data->all_time = json_decode( json_encode( $data )) ;
 		$data->this_week = $this_week;
@@ -149,8 +158,12 @@ class Atw_app{
 				$data->miles = $data->distance;
 				$data->kilometers = $data->distance * .621371;
 			}
-			$data->pace_km = $data->minutes / $data->kilometers;
-			$data->pace_mi = $data->minutes / $data->miles;
+			$data->pace_km = 0;
+			$data->pace_mi = 0;
+			if( return_if( $data, 'minutes')){
+				$data->pace_km = $data->minutes / $data->kilometers;
+				$data->pace_mi = $data->minutes / $data->miles;
+			}
 		
 			$success = pods('run')->save( ( array ) $data );
 			if( $success ){
@@ -218,13 +231,16 @@ class Atw_app{
 		 * @return void
 		 */
 	public static function get_my_runs( ){
+		ini_set( 'display_errors' , 'on');
 			date_default_timezone_set('America/Denver');
 			global $wpdb;
 			$success 	= false;
 			$data 		= mx_POST();
 			$start = return_if( $data, 'start' );
 			$end = return_if( $data , 'end' );
-			$where = "`run_date` >= '{$start}' AND `run_date` <= '{$end}' ";
+			$where= '';
+			if( $start && $end )
+				$where = "`run_date` >= '{$start}' AND `run_date` <= '{$end}' ";
 			if( $user_id = return_if( $data, 'user_id') ) {
 				$where.="AND ( `user`.`id` = '{$data->user_id}' OR `user_id` = '{$user_id}') ";
 			}
@@ -236,14 +252,73 @@ class Atw_app{
 					$e->title = $e->distance . $e->unit;
 					$e->start = date( 'Y-m-d 00:00:00', strtotime( $e->run_date)) ;
 					$e->end = date( 'Y-m-d 11:59:59', strtotime( $e->run_date)) ;
+					$e->iso = date(DATE_ISO8601, strtotime($e->start));
 				}
 			}else{
 				$events = [];
 			}
-			return_json ( compact( 'events', 'success' ) );
+			$date_totals = ( object ) [];
+			foreach( $events as $event  ){
+				$date = date( 'Y-m-d' , strtotime( $event->start ));
+				if( !property_exists( $date_totals  , $date )){
+					$date_totals->$date= ( object ) [ 'miles' => 0 , 'kilometers' => 0 ];
+				}
+				 $date_totals->$date->miles += number_format($event->miles , 2);
+				 $date_totals->$date->kilometers += number_format( $event->kilometers , 2 ) ;
+			}
+			return_json ( compact( 'events', 'success' , 'date_totals' ) );
 			
-		}
+	}
 	
+		/**
+		 * get_events function.
+		 * 
+		 * @access public
+		 * @static
+		 * @return void
+		 */
+		public static function get_my_log( ){
+			ini_set( 'display_errors' , 'on');
+				date_default_timezone_set('America/Denver');
+				global $wpdb;
+				$success 	= false;
+				$data 		= mx_POST();
+				$start = return_if( $data, 'start' );
+				$end = return_if( $data , 'end' );
+				$where= '';
+				if( $start && $end )
+					$where = "`run_date` >= '{$start}' AND `run_date` <= '{$end}' ";
+				if( $user_id = return_if( $data, 'user_id') ) {
+					$where.="AND ( `user`.`id` = '{$data->user_id}' OR `user_id` = '{$user_id}') ";
+				}
+				$events 	= pods( 'run')->find( [ 'where'=>  $where , 'limit'=> '-1'  , 'orderby' => ' `run_date` DESC ']  )->data();
+				// if there were events continue;
+				if( $events ){
+					$success = true;
+					foreach( $events as &$e ){
+						$e->title = $e->distance . $e->unit;
+						$e->start = date( 'Y-m-d 00:00:00', strtotime( $e->run_date)) ;
+						$e->end = date( 'Y-m-d 11:59:59', strtotime( $e->run_date)) ;
+						$e->iso = date(DATE_ISO8601, strtotime($e->start));
+					}
+				}else{
+					$events = [];
+				}
+				$date_totals = ( object ) [];
+				foreach( $events as $event  ){
+					$date = date( 'Y-m-d' , strtotime( $event->start ));
+					if( !property_exists( $date_totals  , $date )){
+						$date_totals->$date= ( object ) [ 'miles' => 0 , 'kilometers' => 0 ];
+					}
+					 $date_totals->$date->miles += number_format($event->miles , 2);
+					 $date_totals->$date->kilometers += number_format( $event->kilometers , 2 ) ;
+				}
+				return_json ( compact( 'events', 'success' , 'date_totals' ) );
+				
+	}
+
+
+
 	public static function add_menu_items(){
 		wp_enqueue_script( 'mag-run-menu-component',  TMPL_PATH .'/assets/js/component.mag-run-menu.js' , null , null, true  );
 		echo Loader::partial( 'partials/component-mag-run-menu');

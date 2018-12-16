@@ -27,31 +27,38 @@
 		</div>
 		<div class = 'row text-center'>
 			<div class = 'col'>
-				<h1 class = 'mg-display-1'>{{$ctrl.MRS.userStats[$ctrl.runs_total_time.value].runs_total}}</h1>
+				<h1 class = 'mg-display-1' ng-cloak >{{$ctrl.MRS.userStats[$ctrl.runs_total_time.value].runs_total}}</h1>
 				<div class="mg-h2 text-upper">Total Runs</div>
-				<h4 class = 'mg-h4'>
+				<h4 class = 'mg-h4' ng-cloak >
 					{{$ctrl.runs_total_time.label}} 
 					<span class = 'fa fas fa-caret-{{changing_runs_total_time ? "up" : "down"}}' ng-click="changing_runs_total_time = changing_runs_total_time ? false : true " ></span>
 				</h4>
 				<div class = 'toggle-drop' ng-show="changing_runs_total_time">
-					<button type = 'button' ng-repeat="o in $ctrl.run_time_options" ng-click="$ctrl.runs_total_time = o">{{o.label}}.</button>
+					<button type = 'button' class = 'time-toggle' ng-repeat="o in $ctrl.run_time_options" ng-click="$ctrl.runs_total_time = o">{{o.label}}.</button>
 				</div>
 			</div>
 			<div class = 'col'>
-				<h1 class = 'mg-display-1'>{{$ctrl.MRS.userStats[$ctrl.runs_total_time.value].mi_total}}</h1>
+				<h1 class = 'mg-display-1' ng-cloak >{{$ctrl.MRS.userStats[$ctrl.runs_total_time.value].mi_total}}</h1>
 				<div class="mg-h2 text-upper">Total Miles</div>
-				<h4 class = 'mg-h4'>
-					{{$ctrl.runs_total_time.label}} 
-					<span class = 'fa fas fa-caret-{{changing_runs_miles_time ? "up" : "down"}}' ng-click="changing_runs_miles_time = changing_runs_miles_time ? false : true " ></span>
-				</h4>
-				<div class = 'toggle-drop' ng-show="changing_runs_miles_time">
-					<button type = 'button' ng-repeat="o in $ctrl.run_time_options" ng-click="$ctrl.runs_total_time = o">{{o.label}}.</button>
+				<div class = 'relative'>
+					<h4 class = 'mg-h4' ng-cloak >
+						{{$ctrl.runs_total_time.label}} 
+						<span class = 'fa fas fa-caret-{{changing_runs_miles_time ? "up" : "down"}}' ng-click="changing_runs_miles_time = changing_runs_miles_time ? false : true " ></span>
+					</h4>
+					<div class = 'toggle-drop' ng-show="changing_runs_miles_time">
+						<button type = 'button' class = 'time-toggle'ng-repeat="o in $ctrl.run_time_options" ng-click="$ctrl.runs_total_time = o">{{o.label}}.</button>
+					</div>
 				</div>
 			</div>
 			<div class = 'col this-week-goal {{ $ctrl.MRS.userStats.this_week.runs_total >= 4 ? "success" : ""}}'>
-				<h1 class = 'mg-display-1'>{{$ctrl.MRS.userStats.this_week.runs_total}}</h1>
-				<div class="mg-h2 text-upper">Runs This Week</div>
-				<h4 class="mg-h4">Shoot for 4!</h4>
+				<div class = 'success-check'>
+					<span class = 'icon-check-large'></span>
+				</div>
+				<div class = 'success-text'>
+					<h1 class = 'mg-display-1' ng-cloak >{{$ctrl.MRS.userStats.this_week.runs_total}}</h1>
+					<div class="mg-h2 text-upper">Runs This Week</div>
+					<h4 class="mg-h4">Shoot for 4!</h4>
+				</div>
 			</div>
 		</div><!-- // row --> 
 	</div><!-- // container --> 
@@ -64,17 +71,17 @@
 			<form ng-submit="$ctrl.addRun()" class = 'mb-5 '>
 				<div class = 'row text-center'>
 					<div class = 'col'>
-						<h1 class = 'mg-h2 text-upper'>Date</h1>
+						<h1 class = 'mg-h2 text-upper'>Date <sup>*</sup></h1>
 						<div class="mg-h4 mb-2">What day did you run?</div>
 						<input type = 'date' class = 'mg-input bkg-white'  ng-model="$ctrl.run_data.run_date" name="distance" />
 					</div>
 					<div class = 'col'>
-						<h1 class = 'mg-h2 text-upper'>Distance</h1>
+						<h1 class = 'mg-h2 text-upper'>Distance <sup>*</sup> </h1>
 						<div class="mg-h4 mb-2">How far did you run? (in miles)</div>
 						<input type = 'number'  class = 'mg-input bkg-white  text-gray'  step="0.1" ng-model="$ctrl.run_data.distance" name="distance" />
 					</div>
 					<div class = 'col'>
-						<h1 class = 'mg-h2 text-upper'>Time</h1>
+						<h1 class = 'mg-h2 text-upper'>Time <sup>&nbsp;</sup></h1>
 						<div class="mg-h4 mb-2">Minutes you ran. </div>
 						<input type = 'number' class = 'mg-input bkg-white text-gray'   ng-model="$ctrl.run_data.minutes" name="minutes" />
 					</div>
@@ -85,6 +92,7 @@
 								<span ng-show="$ctrl.MRS.success">Posted!</span>
 								<span ng-hide="$ctrl.MRS.success || $ctrl.MRS.posting ">Post It!</span>
 						</button>
+						<h4 class = 'mg-h4'>* Required</h4>
 					</div>
 		
 				</div>
@@ -92,70 +100,37 @@
 				
 		</div>
 	</div>
-	<div class = 'container'>
+	<div class = 'container mt-5'>
 		<div id='calendar'></div>
-	</div>
-
-
-	<div class = 'horizontal-section-bar'>
-		<h1 class = 'horizontal-section-title text-white text-upper'>Run Tracker</h1>
-	</div>
-</div><!-- // athlete calendar --> 
-			
-
-<h1>Old Markup </h1>
-
-<div class="bootstrap-wrapper" >
-		<div class="container" athlete-calendar target="#calendar" user-stats='<?= json_encode_attr( $userStats);?>' >
-			<div class = 'row'>
-				<div class= 'col'>
-					<h3>My Stats</h3>
-				</div>
-				<div class = 'col'>
-					<h4>Total Runs: <small>{{$ctrl.MRS.userStats.runs_total ? $ctrl.MRS.userStats.runs_total : 0}}</small></h4>
-				</div>
-				<div class = 'col'>
-					<h4>Total Distance: <small>{{$ctrl.MRS.userStats.mi_total | number:1}} mi /{{$ctrl.MRS.userStats.km_total | number:1 }} km</small></h4>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-md-4">
-					<div  user-id="<?= $userStats->ID;?>">
-						
-						<form ng-submit="$ctrl.addRun()">
-							<h3>Post My Run</h3>
-							<p>
-								<label>Distance</label><br/>
-								<input class = 'mg-input' type="number" step="0.1" ng-model="$ctrl.run_data.distance" name="distance"  />
-							</p>
-							<p>
-								<label>Date</label><br/>
-								<input  class = 'mg-input'  type = 'date' ng-model="$ctrl.run_data.run_date" name="distance" />
-							</p>
-							<p>
-							  <button type = 'submit' class = 'wpcf7-form-control wpcf7-submit'>
-								<span ng-show="$ctrl.MRS.posting">Posting</span>
-    						   	<span ng-show="$ctrl.MRS.success">Posted!</span>
-							    <span ng-hide="$ctrl.MRS.success || $ctrl.MRS.posting ">Post It!</span>
-							  </button>
-							</p>
-						</form>
-					</div>
-				</div>
-				<div class="col-md-8">
-					<div id='calendar'></div>
-				</div>
-			</div>
+		<div class = 'text-center mt-3'>
+			<h4 class = 'mg-h4'>Week Starts on Sunday</h4>
 		</div>
 	</div>
 
 
-	
-<script>
-	var $page_data = {
-		"today" : "<?= date( 'Y-m-d' , strtotime( 'today' ) ) ;?>" 
-	}	
-</script>
+	<div class = 'horizontal-section-bar'>
+		<h1 class = 'horizontal-section-title text-white text-upper'>Running Log</h1>
+	</div>
+	<div class = 'container'>
+		<div class = 'row run-log-header'>
+			<div class = 'col-2'></div>
+			<div class = 'col-3'> Date.</div>
+			<div class = 'col-2'> Miles.</div>
+			<div class = 'col-3'> Pace.</div>
+			<div class = 'col-2'></div>
+		</div>
+		<div class = 'row-log-body'>
+			<div class = 'row run-log-row' ng-repeat="run in $ctrl.log_runs">
+				<div class = 'col-2'></div>
+				<div class = 'col-3'> {{ run.iso | date:'MMMM dd, yyyy'}}</div>
+				<div class = 'col-2'> {{run.miles}}</div>
+				<div class = 'col-3'> {{run.pace_mi == 0 ? 'n/a' : run.pace_mi }} /mi</div>
+				<div class = 'col-2'><span class = 'icon-mg-edit'></span></div>
+			</div>
+		</div>
+	</div>
+</div><!-- // athlete calendar --> 
+			
 
 <script>
   window.fbAsyncInit = function() {

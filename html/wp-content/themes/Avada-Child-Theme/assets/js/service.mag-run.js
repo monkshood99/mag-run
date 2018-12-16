@@ -4,7 +4,7 @@
     app.service( "MagRunService", [ '$q', '$http','$timeout', function( $q , $http , $timeout ){
         var $s = this;
 
-        this.userStats = {}
+        $s.userStats = {}
         $s.addRun = function( $run_data ){
             var defer = $q.defer();
             $s.posting = true;
@@ -34,11 +34,23 @@
             )
             return defer.promise;
         }
-        this.getUserStats = function(){
+        $s.getUserStats = function(){
 
         }
 
-        return this;
+        $s.getLogRuns = function( $params ){
+            var defer = $q.defer();
+            $http.post( '/?mag::get-log-runs', $params ).then( function( response ){
+                if( response.data.success )
+                    defer.resolve( response.data.events )
+                else defer.reject( response.data )
+            })
+            return defer.promise;
+        }
+
+
+
+        return $s;
     }]);
 
 })()

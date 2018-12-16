@@ -16,6 +16,7 @@ $green-light:#ccff99;
 
 
 /** Helpers **/
+[ng-cloak] { visibility: hidden;}
 
 .text-center{
     text-align: center !important;
@@ -58,6 +59,9 @@ $green-light:#ccff99;
     margin-bottom:5rem;
 }
 
+.relative{
+    position: relative;
+}
 /** Colors **/
 .text-yellow{ color:$yellow !important;}
 .text-gray{ color:$gray !important;}
@@ -66,7 +70,7 @@ $green-light:#ccff99;
 .bkg-gray-light{ background-color: $gray-light; }
 .bkg-white{ background-color: #fff !important;}
 
-/** Beetle **/@at-root
+/** Beetle **/
 .beetle{
     width:100px;
     height:100px;
@@ -111,7 +115,7 @@ $green-light:#ccff99;
             font-family: "Barlow Condensed";
 		    border-radius: 30px;
 		    font-size: 2rem;
-		    padding:10px 40px;
+		    padding:10px 60px;
 	    }
     }
     &-default{
@@ -121,11 +125,11 @@ $green-light:#ccff99;
         border: none;
         outline: none;
         height:auto !important;
-        padding: 1.5rem !important;
-        font-size: 1.2rem !important;
+        padding: 20px !important;
+        font-size: 20px !important;
         text-align: center;
         background: white;
-        border-radius: 10px;     
+        border-radius: 25px;     
         color:$gray;   
     }
 }
@@ -139,8 +143,9 @@ $green-light:#ccff99;
     color:$white;
     padding:20px;
     text-align: center;
-	margin: 20px auto;
+	margin: 20px auto 10px;
     font-family: "Barlow Condensed";
+    font-size: 30px;
 }
 
 
@@ -165,19 +170,92 @@ $green-light:#ccff99;
 .this-week-goal{
     &.success{
         background:$green-light;
+        .success-check{
+            opacity: 1;
+        }
+    }
+    .success-check{
+        opacity: 0;
+        position: absolute;
+        text-align:center;
+        width:100%;
+        padding-right:30px;
+        .icon-check-large{
+            color:$green-light;
+            font-size:160px;
+        }
+    }
+    .success-text{
+        position: relative;
     }
 }
 
+.run-log-header{
+
+    font-family: "Lato";
+    font-weight: bold;
+    font-size:16px;
+    border-bottom:1px solid $gray;
+    padding-bottom:18px;
+    padding-top:18px;
+}
+.run-log-row{
+    font-family: "Lato";
+    font-size:24px;
+    border-bottom:1px solid $gray;
+    padding-bottom:18px;
+    padding-top:18px;
+}
+.toggle-drop{
+    // position: absolute;
+    button{
+        cursor: pointer;
+        outline:none;
+        background:none;
+        font-size:16px;
+        border:none;
+        border-right:1px solid;
+        &:hover{
+            color: $yellow;
+            border-color: #646464;
+        }
+        &:last-child{
+            border-right:none !important;
+        }
+    }
+}
 
 /** Event Calender **/
 
-.fc-button{
-    background:none;
-    border:none;
+.fc-next-button, .fc-prev-button {
+    background: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+.fc-header-toolbar h2{
+    font-family: 'Lato';
 }
 .fc-day.fc-widget-content.has-events{
 	background-color:$green-light;
-	
+}
+.fc-day-grid .fc-event-container{
+    display: none;
+}
+.fc-day-total{
+    font-size: 20px;
+    font-family: "Lato";
+    text-align: center;
+    line-height: 40px;
+    padding-top: 24px;    
 }
 
+.fc-day-header{
+    border:none !important;
+}
+.fc-month-view .fc-head-container.fc-widget-header{
+    border-top-color: transparent !important;
+    border-right-color: transparent !important;
+    border-left-color:  transparent !important;
+}
 
