@@ -1,28 +1,29 @@
-<?php 
+<?php
 
 
 Atw_app::start();
 
 
-	
+
 class Atw_app{
-	
+
 	public static function start(){
 		Atw_app::enqueue();
 		Atw_app::add_actions();
 		Atw_app::add_shortcodes();
-	}	
-	
+	}
+
 	public static function extend_init(){
 		if( trying_to( 'mag::post-my-run' , 'request' )) static::post_my_run();
 		if( trying_to( 'mag::edit-my-run' , 'request' )) static::edit_my_run();
+		if( trying_to( 'mag::delete-my-run' , 'request' )) static::delete_my_run();
 		if( trying_to( 'mag::get-my-runs' , 'request' )) static::get_my_runs();
 		if( trying_to( 'mag::get-log-runs' , 'request' )) static::get_my_log();
 		if( trying_to( 'mag::get-total-runs' , 'request' )) static::get_total_runs(false);
 		if( trying_to( 'mag::get-total-distance' , 'request' )) static::get_totals(false, return_if( $_REQUEST, 'unit'));
 		if( trying_to( 'mag::post-to-facebook' , 'request' )) static::post_to_facebook();
 
-		
+
 	}
 
 	public static function enqueue(){
@@ -34,7 +35,7 @@ class Atw_app{
 				wp_enqueue_style( 'mag-app-screen',  TMPL_PATH . '/assets/css/screen.css' );
 			} , 99 , 99 );
 		}
-	}	
+	}
 
 	public static function add_actions(){
 		add_action( 'init', ['Atw_app', 'extend_init'] , 2, 100 );
@@ -42,17 +43,17 @@ class Atw_app{
 			add_action( 'avada_header',  ['Atw_app', 'add_menu_items'], 3, 999 );
 		}
 		/*
-		add_action('pods_api_pre_save_pod_item_run', array('Atw_app', 'pods_api_pre_save_pod_item_run'),999, 3); 
-		add_action('pods_api_pre_save_pod_item_user', array('Atw_app', 'pods_api_pre_save_pod_item_user'),999, 3); 
+		add_action('pods_api_pre_save_pod_item_run', array('Atw_app', 'pods_api_pre_save_pod_item_run'),999, 3);
+		add_action('pods_api_pre_save_pod_item_user', array('Atw_app', 'pods_api_pre_save_pod_item_user'),999, 3);
 		*/
-		
+
 	}
 
 	public static function add_shortcodes(){
-		add_shortcode( 'total-distance', ['Atw_app', 'get_total_distance_shortcode']  );	
-		add_shortcode( 'total-runs', ['Atw_app', 'get_total_runs_shortcode']  );	
-		add_shortcode( 'mag-totals', ['Atw_app', 'get_totals_shortcode']  );	
-	
+		add_shortcode( 'total-distance', ['Atw_app', 'get_total_distance_shortcode']  );
+		add_shortcode( 'total-runs', ['Atw_app', 'get_total_runs_shortcode']  );
+		add_shortcode( 'mag-totals', ['Atw_app', 'get_totals_shortcode']  );
+
 	}
 
 
@@ -82,7 +83,7 @@ class Atw_app{
 		if( $local ) return $total;
 		else return_json( compact( 'total'));
 	}
-	
+
 	public static function get_user_totals( $user_id = false ){
 		$default_totals = ( object) [ 'runs_total'=> 0, 'km_total' => 0, 'mi_total'=> 0 ];
 
@@ -92,9 +93,9 @@ class Atw_app{
 		$data = return_if( $runs, 0 , $default_totals );
 		$data->km_total = is_numeric( $data->km_total ) ? $data->km_total : 0  ;
 		$data->mi_total = is_numeric( $data->mi_total ) ? $data->mi_total : 0   ;
-		
 
-		// get runs of this week 
+
+		// get runs of this week
 		$day = date('w');
 		$start = date('Y-m-d', strtotime('-'.$day.' days'));
 		$end = date('Y-m-d', strtotime('+'.(6-$day).' days'));
@@ -103,20 +104,20 @@ class Atw_app{
 		$this_week = return_if( $this_week, 0  , $default_totals  );
 		$this_week->km_total = is_numeric( $this_week->km_total ) ? $this_week->km_total : 0   ;
 		$this_week->mi_total = is_numeric( $this_week->mi_total ) ? $this_week->mi_total : 0   ;
-		
-		// get runs of this year 
+
+		// get runs of this year
 		$start = date('Y-m-d', strtotime('1/01'));
 		$end = date('Y-m-d', strtotime('12/31'));
 		$where = "`run_date` >= '{$start}' AND `run_date` <= '{$end}' AND ( `user`.`id` = '{$user_id}' OR `user_id` = '{$user_id}') ";
 		$this_year 	= pods( 'run')->find( [ 'select'=> 'COUNT(`t`.`id`) as `runs_total` ,FORMAT(SUM(kilometers),1) as `km_total` , FORMAT(SUM(miles),1) as `mi_total` ' , 'where'=>  $where , 'limit'=> '-1' ]  )->data();
 		$this_year = return_if( $this_year, 0  , $default_totals  );
-		$this_year->km_total = is_numeric( $this_year->km_total ) ? $this_year->km_total : 0  ; 
+		$this_year->km_total = is_numeric( $this_year->km_total ) ? $this_year->km_total : 0  ;
 		$this_year->mi_total = is_numeric( $this_year->mi_total ) ? $this_year->mi_total : 0  ;
-		
+
 		$data->all_time = json_decode( json_encode( $data )) ;
 		$data->this_week = $this_week;
 		$data->this_year = $this_year;
-		
+
 		return $data;
 	}
 
@@ -126,7 +127,7 @@ class Atw_app{
 	}
 
 	public static function get_total_distance_shortcode( $atts ) {
-		$unit = return_if( $atts, 'unit', 'mi'); 
+		$unit = return_if( $atts, 'unit', 'mi');
 		$totals = static::get_totals( true , $unit  );
 		if( $unit == 'mi') return $totals->mi_total;
 		if( $unit == 'km') return $totals->km_total;
@@ -142,7 +143,7 @@ class Atw_app{
 	}
 
 
-	
+
 	public static function post_my_run(){
 		$data = mx_POST();
 		$success = false;
@@ -153,7 +154,7 @@ class Atw_app{
 
 			if( return_if( $data, 'unit') == 'mi') {
 				$data->miles = $data->distance;
-				$data->kilometers = $data->distance * 1.60934;	
+				$data->kilometers = $data->distance * 1.60934;
 			}
 			if( return_if( $data, 'unit' == 'km')){
 				$data->miles = $data->distance;
@@ -165,20 +166,20 @@ class Atw_app{
 				$data->pace_km = $data->minutes / $data->kilometers;
 				$data->pace_mi = $data->minutes / $data->miles;
 			}
-		
+
 			$success = pods('run')->save( ( array ) $data );
 			if( $success ){
 				$new_run = [
 					'title' => $data->distance . ' ' .$data->unit,
 					'start' => date( 'Y-m-d 00:00:00', strtotime( $data->run_date)) ,
-					'end' => date( 'Y-m-d 11:59:59', strtotime( $data->run_date)) 
+					'end' => date( 'Y-m-d 11:59:59', strtotime( $data->run_date))
 				];
 			}
 			$userStats = static::get_user_totals( $user_id );
 		}
 		return_json ( compact( 'save_data' , 'success' , 'data' , 'new_run' , 'userStats'));
 	}
-	
+
 	public static function edit_my_run(){
 		$data = mx_POST();
 		$success = false;
@@ -189,7 +190,7 @@ class Atw_app{
 
 			if( return_if( $data, 'unit') == 'mi') {
 				$data->miles = $data->distance;
-				$data->kilometers = $data->distance * 1.60934;	
+				$data->kilometers = $data->distance * 1.60934;
 			}
 			if( return_if( $data, 'unit' == 'km')){
 				$data->miles = $data->distance;
@@ -206,7 +207,7 @@ class Atw_app{
 				$new_run = [
 					'title' => $data->distance . ' ' .$data->unit,
 					'start' => date( 'Y-m-d 00:00:00', strtotime( $data->run_date)) ,
-					'end' => date( 'Y-m-d 11:59:59', strtotime( $data->run_date)) 
+					'end' => date( 'Y-m-d 11:59:59', strtotime( $data->run_date))
 				];
 			}
 			$userStats = static::get_user_totals( $user_id );
@@ -214,8 +215,21 @@ class Atw_app{
 		return_json ( compact( 'save_data' , 'success' , 'data' , 'new_run' , 'userStats'));
 	}
 
+	public static function delete_my_run(){
+		$data = mx_POST();
+		$success = false;
+		$errors = [];
+		if( !$user_id = return_if( $data, 'user_id' ))$errors[]= 'Invalid User';
+		if( empty( $errors )){
+			$success = pods('run')->delete( $data->id );
+			if( $success ){
+				$userStats = static::get_user_totals( $user_id );
+			}
+		}
+		return_json ( compact(  'success' ,  'userStats'));
+	}
 
-	
+
 	public static function pods_api_pre_save_pod_item_run($pieces, $is_new_item, $id){
 /*
 		// skip this if importing;
@@ -226,17 +240,17 @@ class Atw_app{
 			'zip_code'	=> return_if($pieces['fields']['zip_code'], 'value'),
 			'country'		=> return_if($pieces['fields']['country'], 'value'),
 		);
-	
+
 		$results = static::geocode_address( $location , false );
-	
+
 		$pieces['fields']['latitude']['value'] = return_if($results, 'lat');
 		$pieces['fields']['longitude']['value'] = return_if($results, 'lng');
-			
+
 */
 		return $pieces;
 	}
-	
-		
+
+
 
 	public static function pods_api_pre_save_pod_item_user($pieces, $is_new_item, $id){
 /*
@@ -248,20 +262,20 @@ class Atw_app{
 			'zip_code'	=> return_if($pieces['fields']['zip_code'], 'value'),
 			'country'		=> return_if($pieces['fields']['country'], 'value'),
 		);
-	
+
 		$results = static::geocode_address( $location , false );
-	
+
 		$pieces['fields']['latitude']['value'] = return_if($results, 'lat');
 		$pieces['fields']['longitude']['value'] = return_if($results, 'lng');
 */
-			
+
 		return $pieces;
 	}
-	
-				
+
+
 	/**
 		 * get_events function.
-		 * 
+		 *
 		 * @access public
 		 * @static
 		 * @return void
@@ -303,12 +317,12 @@ class Atw_app{
 				 $date_totals->$date->kilometers += number_format( $event->kilometers , 2 ) ;
 			}
 			return_json ( compact( 'events', 'success' , 'date_totals' ) );
-			
+
 	}
-	
+
 		/**
 		 * get_events function.
-		 * 
+		 *
 		 * @access public
 		 * @static
 		 * @return void
@@ -350,7 +364,7 @@ class Atw_app{
 					 $date_totals->$date->kilometers += number_format( $event->kilometers , 2 ) ;
 				}
 				return_json ( compact( 'events', 'success' , 'date_totals' ) );
-				
+
 	}
 
 
@@ -359,15 +373,15 @@ class Atw_app{
 		wp_enqueue_script( 'mag-run-menu-component',  TMPL_PATH .'/assets/js/component.mag-run-menu.js' , null , null, true  );
 		echo Loader::partial( 'partials/component-mag-run-menu');
 	}
-		
+
 
 	public static function get_var( $key ){
-		return return_if( 
+		return return_if(
 			[
 				'link_login' =>"/mp-login",
 				'link_register' =>"/join-now",
 				'link_account' =>"/mp-account"
-			], 
+			],
 		$key );
 	}
 
@@ -380,13 +394,13 @@ class Atw_app{
 		  'default_graph_version' => 'v2.10',
 		  //'default_access_token' => '{access-token}', // optional
 		]);
-		
+
 		// Use one of the helper classes to get a Facebook\Authentication\AccessToken entity.
 		//   $helper = $fb->getRedirectLoginHelper();
 		//   $helper = $fb->getJavaScriptHelper();
 		//   $helper = $fb->getCanvasHelper();
 		//   $helper = $fb->getPageTabHelper();
-		
+
 		try {
 		  // Get the \Facebook\GraphNodes\GraphUser object for the current user.
 		  // If you provided a 'default_access_token', the '{access-token}' is optional.
@@ -400,11 +414,11 @@ class Atw_app{
 		  echo 'Facebook SDK returned an error: ' . $e->getMessage();
 		  exit;
 		}
-		
+
 		$me = $response->getGraphUser();
 		echo 'Logged in as ' . $me->getName();
-		
+
 	}
-	
-	
+
+
 }

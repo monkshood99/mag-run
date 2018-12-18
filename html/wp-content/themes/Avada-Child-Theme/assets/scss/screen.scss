@@ -133,8 +133,14 @@ $green-light:#ccff99;
         font-size: 20px !important;
         text-align: center;
         background: white;
-        border-radius: 25px;     
+        border-radius: 20px !important;     
         color:$gray;   
+        width: 100%;
+    }
+    &-modal-body{
+        .mg-input{
+            background: $gray-light !important;
+        }
     }
 }
 

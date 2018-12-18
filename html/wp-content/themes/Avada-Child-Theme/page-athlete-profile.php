@@ -120,30 +120,40 @@
 			<div class = 'col-2'></div>
 		</div>
 		<div class = 'row-log-body'>
-			<div class = 'row run-log-row' ng-repeat="run in $ctrl.log_runs">
+			<div class = 'row run-log-row' id="run-log-row-{{run.id}}" ng-repeat="run in $ctrl.log_runs">
 				<div class = 'col-2'></div>
 				<div class = 'col-3'> {{ run.iso | date:'MMMM dd, yyyy'}}</div>
 				<div class = 'col-2'> {{run.miles}}</div>
 				<div class = 'col-3'> {{run.pace_mi == 0 ? 'n/a' : run.pace_mi | number : 2}} /mi</div>
 				<div class = 'col-2'>
-					<span class = 'icon-mg-edit clickable'  ng-click="$ctrl.startEdit( run )" ></span>
+					<div ng-show="$ctrl.confirmingDelete !== run && $ctrl.deleting !== run ">
+						<span class = 'icon-mg-edit clickable'  ng-click="$ctrl.startEdit( run )" ></span>
+						<span class = 'fa fas fa-trash-o clickable '  ng-click="$ctrl.confirmDelete( run )" ></span>
+					</div>
+					<div ng-show="$ctrl.confirmingDelete == run">
+						<span class = 'fa fas fa-trash-o clickable' ng-click="$ctrl.deleteRun( run )"></span>
+						<span class = 'fa fas fa-times-circle-o clickable ' ng-click="$ctrl.cancelDelete()"></span>
+					</div>
+					<div ng-show='$ctrl.deleting == run'>
+						<span class = 'fa fas fa-refresh fa-spin' ></span>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
-
 	<!-- Modal -->
 	<div class="modal fade" id="run-edit-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
-				<div class="modal-body">
+				<div class="modal-body mg-modal-body">
 					<div class = 'container-fluid'>
 						<form ng-submit="$ctrl.saveEdit( run )">
 							<input type = 'hidden' ng-model="$ctrl.edit_run.run_date"/>
-							<div class = 'row'>
+							<div class = 'row mb-2'>
 								<div class = 'col'>
 									<h1 class = 'mg-h2 text-upper'>Date <sup>*</sup></h1>
+									<div class="mg-h4 ">What day did you run?</div>
 								</div>
 								<div class = 'col'>
 									<input type = 'date' class = 'mg-input bkg-white'  ng-model="$ctrl.edit_run.run_date" name="distance" />
@@ -152,21 +162,23 @@
 							<div class = 'row' >
 								<div class="col">
 									<h1 class = 'mg-h2 text-upper'>Distance <sup>*</sup> </h1>
+									<div class="mg-h4 ">How far did you run? (in miles)</div>
 								</div>
-								<div class="col">
+								<div class="col mb-2">
 									<input type = 'number'  class = 'mg-input bkg-white  text-gray'  step="0.1" ng-model="$ctrl.edit_run.distance" name="distance" />
 								</div>
 							</div>
-							<div class = 'row'>
+							<div class = 'row mb-2'>
 								<div class="col">
 									<h1 class = 'mg-h2 text-upper'>Time <sup>&nbsp;</sup></h1>
+									<div class="mg-h4 ">Minutes you ran. </div>
 								</div>
 								<div class="col">
-									<input type = 'number' class = 'mg-input bkg-white text-gray'   ng-model="$ctrl.edit_run.minutes" name="minutes" />
+								<input type = 'number' class = 'mg-input bkg-white text-gray'   ng-model="$ctrl.edit_run.minutes" name="minutes" />
 								</div>
 							</div>
-							<div class = 'row'>
-								<div class="col-sm-6 offset-sm-	3 text-center mt-2">
+							<div class = ''>
+								<div class="text-center mt-2">
 									<button type = 'submit' class = 'mg-btn bkg-yellow btn-xl'>
 										<small><span ng-show="$ctrl.MRS.posting" class = 'fa-refresh fa-spin fas fa'></span></small>
 										<span ng-show="$ctrl.MRS.success">Updated!</span>

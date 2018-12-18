@@ -14,6 +14,8 @@
 					var $ctrl = $scope.$ctrl  = this
 					$ctrl.MRS = MRS;
 					$ctrl.log_runs = [];
+					$ctrl.deleting = false;
+					$ctrl.confirmingDelete = false;
 					$ctrl.$onInit = function(){
 						$ctrl.MRS.userStats = $scope.userStats;
 						$ctrl.run_time_options = [
@@ -129,7 +131,7 @@
 						$ctrl.MRS.addRun( $ctrl.run_data ).then( 
 							function( response ){	
 								if( response.success ){
-									$ctrl.cal.fullCalendar('renderEvent', response.new_run, true);
+									$ctrl.cal.fullCalendar('refetchEvents');
 									$ctrl.getLogRuns();
 								}
 							}, 
@@ -158,7 +160,28 @@
 							function( response ){console.log( response ) }
 						)
 					}
-				
+					
+					$ctrl.confirmDelete = function( $run ){
+						$ctrl.confirmingDelete = $run;
+					}
+					$ctrl.cancelDelete = function( $run ){
+						$ctrl.confirmingDelete = false;
+					}
+					$ctrl.deleteRun = function( $run  ){
+						$ctrl.deleting = $run;
+						$ctrl.confirmingDelete = false;
+						jQuery( '#run-log-row-' + $run.id ).fadeOut();
+						$ctrl.MRS.deleteRun( $run ).then( 
+							function( response ){	
+								$ctrl.deleting = false;
+								if( response.success ){
+									$ctrl.cal.fullCalendar('refetchEvents');
+									$ctrl.getLogRuns();
+								}
+							}, 
+							function( response ){console.log( response ) }
+						)
+					}
 					
 					$ctrl.eventClick = function(calEvent, jsEvent, view) {
 						if( view.type == 'month'){

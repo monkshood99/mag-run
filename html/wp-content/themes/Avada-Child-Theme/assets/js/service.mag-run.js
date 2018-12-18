@@ -62,6 +62,31 @@
             return defer.promise;
         }        
 
+        $s.deleteRun = function( $run_data ){
+            var defer = $q.defer();
+            $s.posting = true;
+            $run_data.unit = 'mi';
+            $http.post( '/?mag::delete-my-run', $run_data ).then(
+                function( response ){
+                    $s.posting = false;
+                    if( response.data.success ){
+                        $s.userStats = response.data.userStats;
+                        $s.success = true;
+                        $timeout( function() { $s.success = false }, 350 );
+                    }else{
+                        $s.error = true;
+                    }
+                    defer.resolve( response.data )
+                },
+                function(){
+                    $s.error = true;
+                    $s.posting = false;
+                    defer.resolve( response );
+                }
+            )
+            return defer.promise;
+        }        
+
         $s.getUserStats = function(){
 
         }
