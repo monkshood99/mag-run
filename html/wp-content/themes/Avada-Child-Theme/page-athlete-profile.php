@@ -116,7 +116,7 @@
 			<div class = 'col-2'></div>
 			<div class = 'col-3'> Date.</div>
 			<div class = 'col-2'> Miles.</div>
-			<div class = 'col-3'> Pace.</div>
+			<div class = 'col-3'> Pace. ( min / mi ) </div>
 			<div class = 'col-2'></div>
 		</div>
 		<div class = 'row-log-body'>
@@ -124,13 +124,71 @@
 				<div class = 'col-2'></div>
 				<div class = 'col-3'> {{ run.iso | date:'MMMM dd, yyyy'}}</div>
 				<div class = 'col-2'> {{run.miles}}</div>
-				<div class = 'col-3'> {{run.pace_mi == 0 ? 'n/a' : run.pace_mi }} /mi</div>
-				<div class = 'col-2'><span class = 'icon-mg-edit'></span></div>
+				<div class = 'col-3'> {{run.pace_mi == 0 ? 'n/a' : run.pace_mi | number : 2}} /mi</div>
+				<div class = 'col-2'>
+					<span class = 'icon-mg-edit clickable'  ng-click="$ctrl.startEdit( run )" ></span>
+				</div>
 			</div>
 		</div>
 	</div>
+
+
+	<!-- Modal -->
+	<div class="modal fade" id="run-edit-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class = 'container-fluid'>
+						<form ng-submit="$ctrl.saveEdit( run )">
+							<input type = 'hidden' ng-model="$ctrl.edit_run.run_date"/>
+							<div class = 'row'>
+								<div class = 'col'>
+									<h1 class = 'mg-h2 text-upper'>Date <sup>*</sup></h1>
+								</div>
+								<div class = 'col'>
+									<input type = 'date' class = 'mg-input bkg-white'  ng-model="$ctrl.edit_run.run_date" name="distance" />
+								</div>
+							</div>
+							<div class = 'row' >
+								<div class="col">
+									<h1 class = 'mg-h2 text-upper'>Distance <sup>*</sup> </h1>
+								</div>
+								<div class="col">
+									<input type = 'number'  class = 'mg-input bkg-white  text-gray'  step="0.1" ng-model="$ctrl.edit_run.distance" name="distance" />
+								</div>
+							</div>
+							<div class = 'row'>
+								<div class="col">
+									<h1 class = 'mg-h2 text-upper'>Time <sup>&nbsp;</sup></h1>
+								</div>
+								<div class="col">
+									<input type = 'number' class = 'mg-input bkg-white text-gray'   ng-model="$ctrl.edit_run.minutes" name="minutes" />
+								</div>
+							</div>
+							<div class = 'row'>
+								<div class="col-sm-6 offset-sm-	3 text-center mt-2">
+									<button type = 'submit' class = 'mg-btn bkg-yellow btn-xl'>
+										<small><span ng-show="$ctrl.MRS.posting" class = 'fa-refresh fa-spin fas fa'></span></small>
+										<span ng-show="$ctrl.MRS.success">Updated!</span>
+										<span ng-hide="$ctrl.MRS.success || $ctrl.MRS.posting ">Update!</span>
+									</button>
+									<h4 class = 'mg-h4'>* Required</h4>
+								</div>		
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
 </div><!-- // athlete calendar --> 
-			
+
+
+
+
 
 <script>
   window.fbAsyncInit = function() {

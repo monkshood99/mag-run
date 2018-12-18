@@ -59,6 +59,10 @@ $green-light:#ccff99;
     margin-bottom:5rem;
 }
 
+.clickable{
+    cursor: pointer;
+}
+
 .relative{
     position: relative;
 }
@@ -169,7 +173,6 @@ $green-light:#ccff99;
 
 .this-week-goal{
     &.success{
-        background:$green-light;
         .success-check{
             opacity: 1;
         }

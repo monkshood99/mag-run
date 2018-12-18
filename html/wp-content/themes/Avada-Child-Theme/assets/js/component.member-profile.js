@@ -31,6 +31,7 @@
 						$ctrl.set_run_option = function( o , k){
 							console.log( o, k )
 						}
+						$ctrl.edit_run = {};
 
 /*
 						$ctrl.default_options = {
@@ -136,6 +137,27 @@
 						)
 					}
 
+					$ctrl.startEdit = function( run ){
+						jQuery('#run-edit-modal').modal('show');
+						$ctrl.edit_run = run;
+						$ctrl.edit_run.run_date = moment( $ctrl.edit_run.run_date ).toDate();
+						$ctrl.edit_run.distance = parseFloat( $ctrl.edit_run.distance );
+						$ctrl.edit_run.minutes = parseInt( $ctrl.edit_run.minutes );
+					}
+					$ctrl.saveEdit = function(  ){
+						$ctrl.MRS.saveEdit( $ctrl.edit_run ).then( 
+							function( response ){	
+								if( response.success ){
+									$ctrl.cal.fullCalendar('refetchEvents');
+									$ctrl.getLogRuns();
+									$timeout( function(){
+										jQuery('#run-edit-modal').modal('hide');
+									} , 500 )
+								}
+							}, 
+							function( response ){console.log( response ) }
+						)
+					}
 				
 					
 					$ctrl.eventClick = function(calEvent, jsEvent, view) {
@@ -212,7 +234,6 @@
 						}
 						$ctrl.week_events[start_of_week].count += 1;
 						if( $ctrl.week_events[start_of_week].count >= 4 &&  $ctrl.week_events[start_of_week].complete  == false  ){
-							console.log( $ctrl.week_events);
 							jQuery("[data-date='"+start_of_week+"']").addClass( 'has-events')
 							// console.log('start of week' , start_of_week);
 							$ctrl.week_events[start_of_week].complete = true;
@@ -250,6 +271,7 @@
 						    	$ctrl.start = $ctrl.cal.fullCalendar('getCalendar').view.start.format('MMM Do \'YY');
 						    	$ctrl.end = $ctrl.cal.fullCalendar('getCalendar').view.start.format('MMM Do \'YY');
 								if( response.data.success ){
+									jQuery( '.fc-day-total').remove();
 									$ctrl.date_totals = response.data.date_totals;
 									for( var $date in $ctrl.date_totals ){
 										var $current = $ctrl.date_totals[$date];

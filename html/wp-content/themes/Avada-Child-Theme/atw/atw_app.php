@@ -15,6 +15,7 @@ class Atw_app{
 	
 	public static function extend_init(){
 		if( trying_to( 'mag::post-my-run' , 'request' )) static::post_my_run();
+		if( trying_to( 'mag::edit-my-run' , 'request' )) static::edit_my_run();
 		if( trying_to( 'mag::get-my-runs' , 'request' )) static::get_my_runs();
 		if( trying_to( 'mag::get-log-runs' , 'request' )) static::get_my_log();
 		if( trying_to( 'mag::get-total-runs' , 'request' )) static::get_total_runs(false);
@@ -166,6 +167,41 @@ class Atw_app{
 			}
 		
 			$success = pods('run')->save( ( array ) $data );
+			if( $success ){
+				$new_run = [
+					'title' => $data->distance . ' ' .$data->unit,
+					'start' => date( 'Y-m-d 00:00:00', strtotime( $data->run_date)) ,
+					'end' => date( 'Y-m-d 11:59:59', strtotime( $data->run_date)) 
+				];
+			}
+			$userStats = static::get_user_totals( $user_id );
+		}
+		return_json ( compact( 'save_data' , 'success' , 'data' , 'new_run' , 'userStats'));
+	}
+	
+	public static function edit_my_run(){
+		$data = mx_POST();
+		$success = false;
+		$errors = [];
+		if( !$user_id = return_if( $data, 'user_id' ))$errors[]= 'Invalid User';
+		if( empty( $errors )){
+			$data->run_date = date( 'Y-m-d' , strtotime( $data->run_date ));
+
+			if( return_if( $data, 'unit') == 'mi') {
+				$data->miles = $data->distance;
+				$data->kilometers = $data->distance * 1.60934;	
+			}
+			if( return_if( $data, 'unit' == 'km')){
+				$data->miles = $data->distance;
+				$data->kilometers = $data->distance * .621371;
+			}
+			$data->pace_km = 0;
+			$data->pace_mi = 0;
+			if( return_if( $data, 'minutes')){
+				$data->pace_km = $data->minutes / $data->kilometers;
+				$data->pace_mi = $data->minutes / $data->miles;
+			}
+			$success = pods('run')->save( ( array ) $data , null , $data->id );
 			if( $success ){
 				$new_run = [
 					'title' => $data->distance . ' ' .$data->unit,
