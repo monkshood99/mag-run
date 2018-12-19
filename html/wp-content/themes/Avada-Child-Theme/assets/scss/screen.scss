@@ -268,3 +268,43 @@ $green-light:#ccff99;
     border-left-color:  transparent !important;
 }
 
+/** Accounts Pages **/ 
+.page-template-page-accounts {
+    #main {
+        padding: 0px !important;
+    }
+
+    .mepr-submit, .mepr-share-button{
+        border:none;
+        border-radius: 20px !important;
+        padding:5px 10px;
+        text-transform: uppercase;
+        font-family: "Barlow Condensed";
+        border-radius: 30px;
+        font-size: 1rem;
+        padding:10px 60px;
+        background: #fff1a3;
+        color: #333333;
+    }
+    
+    .mepr-account-welcome-message{
+        p {
+            font-size: 1.2rem;
+        }
+    }
+    #mepr-account-nav{
+        margin-top:40px;
+    }
+    
+}
+
+.mp_wrapper table.mepr-account-table {
+    text-align: left;
+}
+
+.mepr_error {
+    background:none !important;
+    border:none;
+    border-bottom: 1px solid #d40022 !important;
+    color:#d40022;
+}
