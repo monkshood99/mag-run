@@ -5,6 +5,9 @@ $white: #ffffff;
 $green-light:#ccff99;
 
 
+
+
+
 @import '../fonts/icomoon/style.css';
 
 [mag-run-menu-component]{
@@ -52,12 +55,16 @@ $green-light:#ccff99;
 .mb-3{
     margin-bottom:3rem;
 }
+.pb-3{
+    padding-bottom:3rem;
+}
 .mb-4{
     margin-bottom:4rem;
 }
 .mb-5{
     margin-bottom:5rem;
 }
+.d-none { display: none !important;}
 
 .clickable{
     cursor: pointer;
@@ -66,6 +73,19 @@ $green-light:#ccff99;
 .relative{
     position: relative;
 }
+
+.show-mobile{
+    @media only screen and (min-width: 600px) {
+        display: none !important;
+    }    
+}
+
+.hide-mobile{
+    @media only screen and (max-width: 600px) {
+        display: none !important;
+    }    
+}
+
 /** Colors **/
 .text-yellow{ color:$yellow !important;}
 .text-gray{ color:$gray !important;}
@@ -87,7 +107,16 @@ $green-light:#ccff99;
 .beetle-circle{
     border-radius: 100%;   
 }
-
+.btn-modal-close{
+    padding: 5%;
+    margin: 10px 0px;
+    display: block;
+    width: 24px;
+    height: 24px;
+    border: 1px solid !important;
+    border-radius: 100%;
+    font-size: 12px;
+}
 
 
 .mg{
@@ -95,6 +124,7 @@ $green-light:#ccff99;
         font-family: 'Lato';
         font-size: 63px;
         font-weight: bold;
+        line-height: 66px;
     }
     &-h2{
         font-family: 'Lato';
@@ -107,14 +137,21 @@ $green-light:#ccff99;
         font-weight: normal;
     }
     &-display-1{
+        font-size:64px;
+        line-height: 1.5em;
         font-family: "Barlow Condensed";
-        font-size:87px;
         font-weight: bold;
+        @media (min-width: 640px){
+            font-size:87px;
+        }
     }
     &-btn{
 	    padding:5px 10px;
 	    font-size: 1rem;
-	    text-transform: uppercase;
+        text-transform: uppercase;
+        border-radius:12px;
+        border: none;
+        outline: none;
 	    &.btn-xl{
             font-family: "Barlow Condensed";
 		    border-radius: 30px;
@@ -126,7 +163,7 @@ $green-light:#ccff99;
         font-family: Roboto, Arial, Helvetica, sans-serif;        
     }
     &-input{
-        border: none;
+        border: 1px solid $gray !important;
         outline: none;
         height:auto !important;
         padding: 20px !important;
@@ -137,6 +174,18 @@ $green-light:#ccff99;
         color:$gray;   
         width: 100%;
     }
+    &-textarea{
+        border: 1px solid $gray !important;
+        outline: none;
+        height:auto !important;
+        padding: 20px !important;
+        font-size: 20px !important;
+        background: white;
+        border-radius: 20px !important;     
+        color:$gray;   
+        width: 100%;
+
+    }
     &-modal-body{
         .mg-input{
             background: $gray-light !important;
@@ -144,6 +193,14 @@ $green-light:#ccff99;
     }
 }
 
+.mp-form-submit{
+    padding:5px 10px;
+    font-size: 1rem;
+    text-transform: uppercase;
+    border-radius: 30px;
+    
+
+}
 
 
 /** Elements **/
@@ -161,20 +218,124 @@ $green-light:#ccff99;
 
 /** Overrides **/ 
 
+.loading-container{
+    min-height: 40vh;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    width:100%;
+
+    .loading{
+        width:100%;
+        height:70px;
+        display:block;
+        text-align:center;
+        span{
+            display:inline-block;
+            float:none;
+            // margin-left:-10px;
+            // margin-right:-10px;
+            width:40px;
+            height:40px;
+            font-size:30px;
+            background-color:$yellow;
+            border-radius: 100%;
+            &:before{
+                content: "\e999";
+                font-family: 'icomoon' !important;
+                speak: none;
+                font-style: normal;
+                font-weight: normal;
+                font-variant: normal;
+                text-transform: none;
+                line-height: 38px;
+                font-size: 24px;
+                }
+            &.load-1{
+                opacity:0;
+                -webkit-animation: loader 1s infinite alternate;
+                -moz-animation:    loader 1s infinite alternate; 
+                -o-animation:      loader 1s infinite alternate; 
+                animation:         loader 1s infinite alternate;
+            }
+            &.load-2{
+                opacity:0;
+                -webkit-animation: loader 1s infinite alternate .2s;
+                -moz-animation:    loader 1s infinite alternate .2s; 
+                -o-animation:      loader 1s infinite alternate .2s; 
+                animation:         loader 1s infinite alternate .2s;
+            }
+            &.load-3{
+                opacity:0;
+                -webkit-animation: loader 1s infinite alternate .4s;
+                -moz-animation:    loader 1s infinite alternate .4s; 
+                -o-animation:      loader 1s infinite alternate .4s; 
+                animation:         loader 1s infinite alternate .4s;
+            }
+            &.load-4{
+                opacity:0;
+                -webkit-animation: loader 1s infinite alternate .5s;
+                -moz-animation:    loader 1s infinite alternate .5s; 
+                -o-animation:      loader 1s infinite alternate .5s; 
+                animation:         loader 1s infinite alternate .5s;
+            }
+            
+        }
+    }
+    
+    @-webkit-keyframes loader {
+        0%   { opacity: 0; transform:translateX(-10px);}
+        100% { opacity: 1; transform:translateX(10px);  }
+    }
+    @-moz-keyframes loader {
+        0%   { opacity: 0; transform:translateX(-10px);}
+        100% { opacity: 1; transform:translateX(10px);  }
+    }
+    @-o-keyframes loader {
+        0%   { opacity: 0; transform:translateX(-10px);}
+        100% { opacity: 1; transform:translateX(10px);  }
+    }
+    @keyframes loader {
+        0%   { opacity: 0; transform:translateX(-10px);}
+        100% { opacity: 1; transform:translateX(10px);  }
+    }
+    
+}
+.app-container{
+    opacity: 0;
+    transition: all .2s ease-in;
+    &.ready{
+        opacity: 1;
+        transition: all .2s ease-in;
+    }
+}
+
 
 // Athlete Profile
 .page-template-page-athlete-profile {
 	
 	.fusion-page-title-bar{
-    display: none;
-   }
+        display: none;
+    }
    #main{
-	   padding-right:0px;
-	   padding-left:0px;
+	   padding-right:0px !important;
+	   padding-left:0px !important;
 		 .fusion-row {
 			 max-width: 100%;
 		}
-  }
+     }
+    @media (min-width: 0px){
+        .container {
+            width: 100%;
+        }
+    }
+    @media (max-width: 990px){
+        .bootstrap-wrapper .container {
+            max-width: 100% ;
+        }
+    }
 }
 
 .this-week-goal{
@@ -191,7 +352,10 @@ $green-light:#ccff99;
         padding-right:30px;
         .icon-check-large{
             color:$green-light;
-            font-size:160px;
+            font-size: 130px;
+            @media (min-width: 576px){
+                font-size:160px;
+            }
         }
     }
     .success-text{
@@ -200,7 +364,6 @@ $green-light:#ccff99;
 }
 
 .run-log-header{
-
     font-family: "Lato";
     font-weight: bold;
     font-size:16px;
@@ -214,7 +377,36 @@ $green-light:#ccff99;
     border-bottom:1px solid $gray;
     padding-bottom:18px;
     padding-top:18px;
+    .run-log-row-date-lg{
+        display: none;
+        @media only screen and (min-width: 600px) {
+            display: flex !important;
+        }
+    }
+    .run-log-row-date-sm{
+        @media only screen and (min-width: 600px) {
+            display: none !important;
+        }
+    }
+
+    .clickable{
+        border: 1px solid black;
+        border-radius: 100%;
+        padding: 6px;
+        width: 18px;
+        height: 18px;
+        text-align: center;
+        font-size: 18px;
+        opacity: .7;
+        transition: all .1s ease-out;
+        &:hover{
+            opacity: 1;
+            transition: all .2s ease-in;
+            background: $yellow;
+        }
+    }
 }
+
 .toggle-drop{
     // position: absolute;
     button{
@@ -235,6 +427,10 @@ $green-light:#ccff99;
 }
 
 /** Event Calender **/
+.fc-content-skeleton{
+    pointer-events: none !important;
+}
+
 
 .fc-next-button, .fc-prev-button {
     background: none !important;
@@ -248,17 +444,33 @@ $green-light:#ccff99;
 .fc-day.fc-widget-content.has-events{
 	background-color:$green-light;
 }
+.fc-listWeek-view{
+    td.fc-list-item-title.fc-widget-content:hover {
+        background:white !important;
+    }
+    .fc-list-heading-alt{
+        float: none;
+    }
+}
 .fc-day-grid .fc-event-container{
     display: none;
 }
 .fc-day-total{
-    font-size: 20px;
+    font-size: 10px;
     font-family: "Lato";
     text-align: center;
-    line-height: 40px;
     padding-top: 24px;    
+    line-height: 20px;
+    @media only screen and (min-width: 990px) {
+        font-size: 20px;
+        line-height: 40px;
+    }
 }
-
+.fc-day-number{
+    @media only screen and (max-width: 990px) {
+        font-size: 12px;
+    }
+}
 .fc-day-header{
     border:none !important;
 }
@@ -267,6 +479,58 @@ $green-light:#ccff99;
     border-right-color: transparent !important;
     border-left-color:  transparent !important;
 }
+.fc-day{
+    cursor: pointer;
+}
+
+.calendar-container{
+    position: relative;
+    .loader{
+        display: none;
+    }
+    &.loading{
+        .loader{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background:rgba( 255, 255, 255, .7);
+            font-size: 72px;
+            font-weight: bold;
+            position: absolute;
+            z-index: 100;
+        }
+    }
+}
+.mepr-submit, .mepr-share-button, .mepr-account-change-password , 
+button.fc-month-button.fc-button,
+button.fc-listWeek-button.fc-button {
+    border:none;
+    border-radius: 20px !important;
+    padding:5px 10px;
+    text-transform: uppercase;
+    font-family: "Barlow Condensed";
+    border-radius: 30px;
+    font-size: 1rem;
+    padding:10px 60px;
+    background: #ffde17;
+    color: #333333;
+    cursor: pointer;
+    outline:none;
+}
+
+.mepr-account-change-password{
+    float: left;
+    padding: 5px 60px;
+    a{
+        color: #333333;
+        &:hover{
+            color: #333333;
+        }
+    
+    }
+}
 
 /** Accounts Pages **/ 
 .page-template-page-accounts {
@@ -274,18 +538,6 @@ $green-light:#ccff99;
         padding: 0px !important;
     }
 
-    .mepr-submit, .mepr-share-button{
-        border:none;
-        border-radius: 20px !important;
-        padding:5px 10px;
-        text-transform: uppercase;
-        font-family: "Barlow Condensed";
-        border-radius: 30px;
-        font-size: 1rem;
-        padding:10px 60px;
-        background: #fff1a3;
-        color: #333333;
-    }
     
     .mepr-account-welcome-message{
         p {
@@ -307,4 +559,22 @@ $green-light:#ccff99;
     border:none;
     border-bottom: 1px solid #d40022 !important;
     color:#d40022;
+}e
+
+body.logged-out li.menu-item a[title="ATHLETE PROFILE"] {
+    display: none !important;
+}
+body.logged-out li.menu-item a[title="MY ACCOUNT"] {
+    display: none !important;
+}
+
+
+body{
+    &.logged-out{
+        a[title="ATHLETE PROFILE"],a[title="POST MY RUN"] ,a[title="MY ACCOUNT"] { display: none !important;}
+    }
+    &.logged-in{
+        // a[title="MY PROFILE"],a[title="POST MY RUN"] { display: inline-block !important;}
+        [title="JOIN NOW"], [title="LOGIN"]{ display: none !important;}
+    }
 }

@@ -39,6 +39,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	echo apply_filters( 'avada_google_analytics', Avada()->settings->get( 'google_analytics' ) ); // WPCS: XSS ok.
 	echo apply_filters( 'avada_space_head', Avada()->settings->get( 'space_head' ) ); // WPCS: XSS ok.
 	?>
+	
+
 </head>
 
 <?php

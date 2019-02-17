@@ -1,0 +1,26 @@
+{
+    "short_name": "Mag Run",
+    "name": "Magnolia Running",
+    "theme_color": "#FFDB17",
+    "background_color": "#FFDB17",
+    "display": "standalone",
+    "start_url" : "/",
+    "icons": [
+      {
+          "src": "https://magnoliarunning.com/wp-content/uploads/2018/10/magnolia-running_logo_favicon_ipad_retina-66x66.png",
+          "sizes": "66x66",
+          "type": "image/png"
+      },
+      {
+          "src": "https://magnoliarunning.com/wp-content/uploads/2018/10/magnolia-running_logo_favicon_ipad_retina.png",
+          "sizes": "192x192",
+          "type": "image/png"
+      },
+      {
+          "src": "https://magnoliarunning.com/wp-content/uploads/2018/10/magnolia-running_logo_favicon_ipad_retina.png",
+          "sizes": "145x145",
+          "type": "image/png"
+      }
+   ]
+  }
+  

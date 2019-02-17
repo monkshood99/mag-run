@@ -1,0 +1,13 @@
+{
+  "short_name": "MagnoliaRunning",
+  "name": "Magnolia Running",
+  "theme_color": "#FFDB17",
+  "background_color": "#FFDB17",
+  "display": "standalone",
+  "icons": [
+    {
+        "src": "/android-chrome-144x144.png",
+        "sizes": "144x144",
+        "type": "image/png"
+    }
+]

@@ -8,9 +8,11 @@ Atw_app::start();
 class Atw_app{
 
 	public static function start(){
+		if( return_if( $_COOKIE , 'mg_timezone')) date_default_timezone_set( $_COOKIE['mg_timezone']);
 		Atw_app::enqueue();
 		Atw_app::add_actions();
 		Atw_app::add_shortcodes();
+		// prx( $_COOKIE );
 	}
 
 	public static function extend_init(){
@@ -21,8 +23,23 @@ class Atw_app{
 		if( trying_to( 'mag::get-log-runs' , 'request' )) static::get_my_log();
 		if( trying_to( 'mag::get-total-runs' , 'request' )) static::get_total_runs(false);
 		if( trying_to( 'mag::get-total-distance' , 'request' )) static::get_totals(false, return_if( $_REQUEST, 'unit'));
-		if( trying_to( 'mag::post-to-facebook' , 'request' )) static::post_to_facebook();
+		if( trying_to( 'mag::post-to-facebook' , 'request' )) static::post_to_facebook();		
+		if( trying_to( 'mg::setTZ' , 'request' )) static::setTZ();
 
+	}
+
+	public static function setTZ(){
+		$success = false;
+		if( $data = mx_POST() ) {
+			$Dtz = new Helper_DateTimeZone(Helper_DateTimeZone::tzOffsetToName($data->timezone));
+			date_default_timezone_set( $Dtz->getName() );
+			setcookie("mg_timezone", $Dtz->getName() , 0 );  /* expire in 1 hour */
+			$timezone = $Dtz->getName();
+			$success = true;
+		}
+		return_json( compact( 'success' , 'timezone' ) );
+
+		exit;		
 
 	}
 
@@ -30,18 +47,29 @@ class Atw_app{
 		if( !is_admin()){
 			add_action( 'wp_enqueue_scripts' , function(){
 				wp_enqueue_script( 'angular',  TMPL_PATH . '/bower_components/angular/angular.min.js' , null , null, true  );
-				wp_enqueue_script( 'ng-app',  TMPL_PATH . '/assets/js/ng-app.js' , null , null, true  );
-				wp_enqueue_script( 'mag-run-service',  TMPL_PATH . '/assets/js/service.mag-run.js' , null , null, true  );
-				wp_enqueue_style( 'mag-app-screen',  TMPL_PATH . '/assets/css/screen.css' );
+				wp_enqueue_script( 'ng-app',  TMPL_PATH . '/service-worker.js' , null , '3', true  );
+				wp_enqueue_script( 'ng-app',  TMPL_PATH . '/assets/js/ng-app.js' , null , '1', true  );
+				wp_enqueue_script( 'mag-run-service',  TMPL_PATH . '/assets/js/service.mag-run.js' , null , '4', true  );
+				wp_enqueue_style( 'mag-app-screen',  TMPL_PATH . '/assets/css/screen.css' ,null, '16' );
 			} , 99 , 99 );
 		}
 	}
 
 	public static function add_actions(){
 		add_action( 'init', ['Atw_app', 'extend_init'] , 2, 100 );
-		if( trying_to( 'test-menu' , 'get' )){
-			add_action( 'avada_header',  ['Atw_app', 'add_menu_items'], 3, 999 );
-		}
+		add_action( 'wp_head', function(){ 
+			echo '<link rel="manifest" href="/wp-content/themes/Avada-Child-Theme/site.webmanifest">';
+		}, 3, 100 );
+		
+		add_action( 'avada_header',  ['Atw_app', 'add_menu_items'], 3, 999 );
+		add_action( 'wp_footer', ['Atw_app', 'wp_footer'] );
+		add_filter('body_class',function ($classes) {
+			if (! ( is_user_logged_in() ) )$classes[] = 'logged-out';
+			return $classes;
+		});
+		 add_action('mepr_account_nav', function( $user ){
+			echo "<span class='mepr-nav-item mepr-home'><a href='/run-tracker'>Run Tracker</a></span>";
+		 }, 10, 10 ); 
 		/*
 		add_action('pods_api_pre_save_pod_item_run', array('Atw_app', 'pods_api_pre_save_pod_item_run'),999, 3);
 		add_action('pods_api_pre_save_pod_item_user', array('Atw_app', 'pods_api_pre_save_pod_item_user'),999, 3);
@@ -59,15 +87,33 @@ class Atw_app{
 
 	public static function getUserStats($internal = true ){
 		$user = wp_get_current_user(  );
-		$userStats = false;
+		global $wpdb;
 		if( $user ){
+			
 			$totals = Atw_app::get_user_totals( $user->ID );
 			$totals->id = $user->ID;
 			$userStats = $totals;
 		}
-		$userStats->user = $user->data;
+		$userStats->user = $user;
 		if( $internal ) return $userStats;
-		else return_json( compact( 'userStats') );
+		else return_json( compact( 'userStats' ) );
+	}
+	public static function get_user_goals( $user_id ){
+		$user_meta = ( object ) [];
+		// $user_meta_ = $wpdb->get_results( "SELECT * FROM `{$wpdb->base_prefix}usermeta` WHERE `user_id` = '{$user_id}'");
+		// foreach( $user_meta_ as $item ){
+		// 	$user_meta->{$item->meta_key} = $item->meta_value;
+		// }
+		$goal = get_usermeta( $user_id, 'mepr_choose_your_running_challenge');
+		$goal = explode(  '-' , $goal );
+
+		$goal_ = ( object ) [ 'type' => 'week', 'value' => '4'];
+		if( count ( $goal ) == 2 ){
+			$goal_->type = $goal[0];
+			$goal_->value = $goal[1];
+		}
+		return $goal_;
+	
 	}
 
 	public static function get_total_runs( $local = true ){
@@ -85,6 +131,7 @@ class Atw_app{
 	}
 
 	public static function get_user_totals( $user_id = false ){
+		//date_default_timezone_set ( 'America/Denver' ); 
 		$default_totals = ( object) [ 'runs_total'=> 0, 'km_total' => 0, 'mi_total'=> 0 ];
 
 		// get all runs
@@ -117,6 +164,9 @@ class Atw_app{
 		$data->all_time = json_decode( json_encode( $data )) ;
 		$data->this_week = $this_week;
 		$data->this_year = $this_year;
+
+
+		$data->goal = static::get_user_goals( $user_id );
 
 		return $data;
 	}
@@ -162,17 +212,17 @@ class Atw_app{
 			}
 			$data->pace_km = 0;
 			$data->pace_mi = 0;
-			if( return_if( $data, 'minutes')){
-				$data->pace_km = $data->minutes / $data->kilometers;
-				$data->pace_mi = $data->minutes / $data->miles;
+			if( return_if( $data, 'seconds')){
+				$data->pace_km = ( $data->seconds / 60 )  / $data->kilometers;
+				$data->pace_mi = ( $data->seconds / 60 ) / $data->miles;
 			}
 
 			$success = pods('run')->save( ( array ) $data );
 			if( $success ){
 				$new_run = [
 					'title' => $data->distance . ' ' .$data->unit,
-					'start' => date( 'Y-m-d 00:00:00', strtotime( $data->run_date)) ,
-					'end' => date( 'Y-m-d 11:59:59', strtotime( $data->run_date))
+					'start' => date( 'Y-m-d 12:00:00', strtotime( $data->run_date)) ,
+					'end' => date( 'Y-m-d 13:00:00', strtotime( $data->run_date))
 				];
 			}
 			$userStats = static::get_user_totals( $user_id );
@@ -184,7 +234,10 @@ class Atw_app{
 		$data = mx_POST();
 		$success = false;
 		$errors = [];
-		if( !$user_id = return_if( $data, 'user_id' ))$errors[]= 'Invalid User';
+		$user_id = wp_get_current_user()->ID;
+
+
+		// if( !$user_id = return_if( $data, 'user_id' ))$errors[]= 'Invalid User';
 		if( empty( $errors )){
 			$data->run_date = date( 'Y-m-d' , strtotime( $data->run_date ));
 
@@ -198,16 +251,22 @@ class Atw_app{
 			}
 			$data->pace_km = 0;
 			$data->pace_mi = 0;
-			if( return_if( $data, 'minutes')){
-				$data->pace_km = $data->minutes / $data->kilometers;
-				$data->pace_mi = $data->minutes / $data->miles;
+			if( return_if( $data, 'seconds')){
+				$data->pace_km = ( $data->seconds / 60  )  / $data->kilometers;
+				$data->pace_mi = ( $data->seconds / 60 )  / $data->miles;
 			}
-			$success = pods('run')->save( ( array ) $data , null , $data->id );
+			if( return_if( $data, 'id' )){
+				$success = pods('run')->save( ( array ) $data , null , $data->id );
+			}else{
+				$data->user_id = $user_id;
+				$data->user = $user_id;
+				$success = pods('run')->save( ( array ) $data );
+			}
 			if( $success ){
 				$new_run = [
 					'title' => $data->distance . ' ' .$data->unit,
-					'start' => date( 'Y-m-d 00:00:00', strtotime( $data->run_date)) ,
-					'end' => date( 'Y-m-d 11:59:59', strtotime( $data->run_date))
+					'start' => date( 'Y-m-d 12:00:00', strtotime( $data->run_date)) ,
+					'end' => date( 'Y-m-d 13:00:00', strtotime( $data->run_date))
 				];
 			}
 			$userStats = static::get_user_totals( $user_id );
@@ -229,7 +288,27 @@ class Atw_app{
 		return_json ( compact(  'success' ,  'userStats'));
 	}
 
+	public static function getGoalOptions(){
+		$mepr_options = get_option( 'mepr_options', true);
+		$goal_options = [];
+	
+		foreach( $mepr_options['custom_fields'] as $field ){
+			if( $field['field_key'] == 'mepr_choose_your_running_challenge'){
+				foreach( $field['options'] as $o ){
+					$goal = explode(  '-' , $o['option_value'] );
+					if( count ( $goal ) == 2 ){
+						$goal['type'] = $goal[0];
+						$goal['value'] = $goal[1];
+					}
+					$o['goal'] = $goal;
+					$goal_options[]= $o;
+				}
+			}
+		}
 
+
+		return $goal_options;
+	}
 	public static function pods_api_pre_save_pod_item_run($pieces, $is_new_item, $id){
 /*
 		// skip this if importing;
@@ -282,18 +361,16 @@ class Atw_app{
 		 */
 	public static function get_my_runs( ){
 		ini_set( 'display_errors' , 'on');
-			date_default_timezone_set('America/Denver');
+			//date_default_timezone_set('America/Denver');
 			global $wpdb;
 			$success 	= false;
 			$data 		= mx_POST();
 			$start = return_if( $data, 'start' );
 			$end = return_if( $data , 'end' );
 			$where= '';
-			if( $start && $end )
-				$where = "`run_date` >= '{$start}' AND `run_date` <= '{$end}' ";
-			if( $user_id = return_if( $data, 'user_id') ) {
-				$where.="AND ( `user`.`id` = '{$data->user_id}' OR `user_id` = '{$user_id}') ";
-			}
+			$where = "`run_date` >= '{$start}' AND `run_date` <= '{$end}' ";
+			$user_id = return_if( $data, 'user_id');
+			$where.="AND ( `user`.`id` = '{$user_id}' OR `user_id` = '{$user_id}') ";
 			$events 	= pods( 'run')->find( [ 'where'=>  $where , 'limit'=> '-1' ]  )->data();
 			// if there were events continue;
 			if( $events ){
@@ -329,18 +406,14 @@ class Atw_app{
 		 */
 		public static function get_my_log( ){
 			ini_set( 'display_errors' , 'on');
-				date_default_timezone_set('America/Denver');
+				//date_default_timezone_set('America/Denver');
 				global $wpdb;
 				$success 	= false;
 				$data 		= mx_POST();
 				$start = return_if( $data, 'start' );
 				$end = return_if( $data , 'end' );
-				$where= '';
-				if( $start && $end )
-					$where = "`run_date` >= '{$start}' AND `run_date` <= '{$end}' ";
-				if( $user_id = return_if( $data, 'user_id') ) {
-					$where.="AND ( `user`.`id` = '{$data->user_id}' OR `user_id` = '{$user_id}') ";
-				}
+				$user_id = return_if( $data, 'user_id');
+				$where=" ( `user`.`id` = '{$data->user_id}' OR `user_id` = '{$user_id}') ";
 				$events 	= pods( 'run')->find( [ 'where'=>  $where , 'limit'=> '-1'  , 'orderby' => ' `run_date` DESC ']  )->data();
 				// if there were events continue;
 				if( $events ){
@@ -370,10 +443,54 @@ class Atw_app{
 
 
 	public static function add_menu_items(){
-		wp_enqueue_script( 'mag-run-menu-component',  TMPL_PATH .'/assets/js/component.mag-run-menu.js' , null , null, true  );
-		echo Loader::partial( 'partials/component-mag-run-menu');
+		// wp_enqueue_script( 'mag-run-menu-component',  TMPL_PATH .'/assets/js/component.mag-run-menu.js' , null , null, true  );
+		// echo Loader::partial( 'partials/component-mag-run-menu');
 	}
 
+	public static function wp_footer(){
+		wp_enqueue_script( 'mg-post-my-run-modal',  TMPL_PATH .'/assets/js/component.mg-post-my-run-modal.js' , null , null, true  );
+		echo Loader::partial( 'partials/component-post-run-modal');
+		$timezone = return_if( $_COOKIE , 'mg_timezone' );
+		if( !$timezone ){
+			echo '<script type="text/javascript">
+			var _d = new Date();
+
+			var visitortime = new Date();
+			var visitortimezone = -visitortime.getTimezoneOffset()/60 ;
+			var offset = visitortime.getTimezoneOffset();
+
+			document.cookie = "js_date=" + visitortime;
+			document.cookie = "js_date_timezone=" + visitortimezone ;
+			document.cookie = "js_date_offset=" + offset ;
+
+			jQuery.ajax({
+				url: "/?mg::setTZ"  ,
+				method : "post",
+				data :  { date : visitortime, timezone : visitortimezone  , offset : offset  },
+				success: function(a, b, c, d){ 
+					if( a.success ){
+						document.cookie = "js_timezone_string=" + a.timezone ;
+						//location.reload();
+					}
+				},
+				error: function(xhr, error, msg){ 
+					//console.log( xhr , error , msg );
+				},
+				dataType: "json"
+			});				
+
+			if ("serviceWorker" in navigator) {
+			console.log("Will the service worker register?");
+			navigator.serviceWorker.register("/service-worker.js")
+				.then(function(reg){
+				console.log("Yes, it did.");
+				}).catch(function(err) {
+				console.log("No. This happened:", err)
+			});
+			}
+		</script>';
+		}
+	}
 
 	public static function get_var( $key ){
 		return return_if(
@@ -421,4 +538,62 @@ class Atw_app{
 	}
 
 
+}
+
+
+
+/**
+* Helps with timezones.
+* @link http://us.php.net/manual/en/class.datetimezone.php
+*
+* @package  Date
+*/
+class Helper_DateTimeZone extends DateTimeZone
+{
+    /**
+     * Converts a timezone hourly offset to its timezone's name.
+     * @example $offset = -5, $isDst = 0 <=> return value = 'America/New_York'
+     * 
+     * @param float $offset The timezone's offset in hours.
+     *                      Lowest value: -12 (Pacific/Kwajalein)
+     *                      Highest value: 14 (Pacific/Kiritimati)
+     * @param bool  $isDst  Is the offset for the timezone when it's in daylight
+     *                      savings time?
+     * 
+     * @return string The name of the timezone: 'Asia/Tokyo', 'Europe/Paris', ...
+     */
+    final public static function tzOffsetToName($offset, $isDst = null)
+    {
+        if ($isDst === null)
+        {
+            $isDst = date('I');
+        }
+
+        $offset *= 3600;
+        $zone    = timezone_name_from_abbr('', $offset, $isDst);
+
+        if ($zone === false)
+        {
+            foreach (timezone_abbreviations_list() as $abbr)
+            {
+                foreach ($abbr as $city)
+                {
+                    if ((bool)$city['dst'] === (bool)$isDst &&
+                        strlen($city['timezone_id']) > 0    &&
+                        $city['offset'] == $offset)
+                    {
+                        $zone = $city['timezone_id'];
+                        break;
+                    }
+                }
+
+                if ($zone !== false)
+                {
+                    break;
+                }
+            }
+        }
+    
+        return $zone;
+    }
 }

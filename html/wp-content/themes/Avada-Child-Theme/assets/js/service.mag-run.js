@@ -35,12 +35,26 @@
             return defer.promise;
         }
 
+        $s.startEdit = function( run ){
+            jQuery('#run-edit-modal').modal('show');
+            $s.edit_run = run;
+            $s.edit_run.run_date = moment( run.run_date ).toDate();
+            $s.edit_run.distance = parseFloat( run.distance );
+            $s.edit_run.minutes = parseInt( run.minutes );
+            $s.edit_run.seconds = parseInt( run.seconds );
+            $timeout();
+        }
+
+
         $s.saveEdit = function( $run_data ){
             var defer = $q.defer();
             $s.posting = true;
             $run_data.unit = 'mi';
+            $run_data.user_id = $s.userStats.id;
+            console.log( $run_data );
             $http.post( '/?mag::edit-my-run', $run_data ).then(
                 function( response ){
+                    console.log( response )
                     $s.posting = false;
                     if( response.data.success ){
                         $s.userStats = response.data.userStats;
@@ -61,6 +75,14 @@
             )
             return defer.promise;
         }        
+
+        $s.confirmDelete = function( $run ){
+            $s.confirmingDelete = $run;
+        }
+        $s.cancelDelete = function( $run ){
+            $s.confirmingDelete = false;
+        }
+
 
         $s.deleteRun = function( $run_data ){
             var defer = $q.defer();
@@ -101,6 +123,32 @@
             return defer.promise;
         }
 
+        $s.updateGoal = function( $goal   ){
+            $s.userStats.goal = $goal;
+        } 
+
+        $s.postToFb = function( $run ){
+            var $post = {
+                method: 'share_open_graph',
+                action_type: 'og.shares',
+                action_properties: JSON.stringify({
+                    object : {
+                        'og:url': "https://magnoliarunning.com", // your url to share
+                        'og:title': 'I ran ' +  $run.distance + ' miles today',
+                        'og:site_name':'Magnolia Running',
+                        'og:description':$run.comment,
+                        'og:image': 'https://magnoliarunning.com/wp-content/themes/Avada-Child-Theme/assets/img/run-more.jpg',
+                        'og:image:width':'1038',//size of image in pixel
+                        'og:image:height':'353'
+                    }
+                    })
+                };
+            console.log( $post );
+            FB.ui( $post , function(response){ 
+                console.log("response is ",response);
+            });
+
+        }
 
 
         return $s;
