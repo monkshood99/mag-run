@@ -6,7 +6,7 @@
 	wp_enqueue_script( 'moment',  TMPL_PATH . '/bower_components/moment/moment.js' , null , null  );
 	wp_enqueue_script( 'fullcalendar-script',  TMPL_PATH . '/bower_components/fullcalendar/dist/fullcalendar.js' , null , null  );
 	wp_enqueue_style( 'fullcalendar-style', TMPL_PATH . '/bower_components/fullcalendar/dist/fullcalendar.min.css');
-	wp_enqueue_script( 'ng-run-tracker',  TMPL_PATH .'/assets/js/component.member-profile.js' , null , '21', true  );
+	wp_enqueue_script( 'ng-run-tracker',  TMPL_PATH .'/assets/js/component.member-profile.js' , null , '24', true  );
 	wp_enqueue_style( 'boostrap-grid' , TMPL_PATH . "/bower_components/bootstrap4-grid-only/dist/css/bootstrap-grid.min.css" );
 // 	wp_enqueue_script( 'vue',  TMPL_PATH . '/bower_components/vue/dist/vue.min.js' , null , null, true  );
 // 	wp_enqueue_script( 'member-page',  TMPL_PATH .'/assets/js/vue.member-profile.js' , null , null, true  );
@@ -145,6 +145,10 @@
 
 
 		<div class = 'container calendar-container relative mt-5 {{ $ctrl.loading  ? "loading" : ""}}' >
+			<div class = 'view-switcher  pb-3'>
+				<a class = "{{$ctrl.currentCalView == 'month' ? 'active' : ''}}" ng-click="$ctrl.toggleCalendarView( 'month' )">Month</a>
+				<a class = "{{$ctrl.currentCalView == 'list' ? 'active' : ''}}" ng-click="$ctrl.toggleCalendarView( 'list' )">List</a>
+			</div>
 			<div class = 'loader'><span class = "fa fa-spin fa-refresh"></span></div>
 			<div id='calendar'></div>
 			<div class = 'text-center mt-3'>
@@ -209,41 +213,32 @@
 									</div>
 								</div>
 								<div class = 'row mb-2'>
-									<div class = 'col-md-6'>
-										<h1 class = 'mg-h2 text-upper'>Date <sup>*</sup></h1>
-										<div class="mg-h4 ">What day did you run?</div>
-									</div>
-									<div class = 'col-md-6'>
+									<div class = 'col'>
+										<label>Date</label>
 										<input type = 'date' class = 'mg-input bkg-white'  ng-model="$ctrl.MRS.edit_run.run_date" name="distance" />
 									</div>
 								</div>
-								<div class = 'row' >
-									<div class="col-md-6">
-										<h1 class = 'mg-h2 text-upper'>Distance <sup>*</sup> </h1>
-										<div class="mg-h4 ">How far did you run? (in miles)</div>
-									</div>
-									<div class="col-md-6 mb-2">
+								<div class = 'row mb-2' >
+									<div class="col">
+										<label>Distance</label>
 										<input type = 'number'  class = 'mg-input bkg-white  text-gray'  step="0.1" ng-model="$ctrl.MRS.edit_run.distance" name="distance" />
 									</div>
 								</div>
 								<div class = 'row mb-2'>
-									<div class="col-md-6">
-										<h1 class = 'mg-h2 text-upper'>Time <sup>&nbsp;</sup></h1>
-										<div class="mg-h4 ">How long did you run?</div>
-									</div>
-									<div class="col-md-6" ng-if="$ctrl.MRS.edit_run.id">
+									<div class="col" ng-if="$ctrl.MRS.edit_run.id">
+										<label>Time</label>
 										<input type = 'hidden' class = 'mg-input bkg-white text-gray'   ng-model="$ctrl.MRS.edit_run.seconds" name="seconds" />
 										<mg-duration ng-model="$ctrl.MRS.edit_run.seconds"  obj-id="$ctrl.MRS.edit_run.id"></mg-duration> 
 									</div>
-									<div class="col-md-6" ng-if="!$ctrl.MRS.edit_run.id">
+									<div class="col" ng-if="!$ctrl.MRS.edit_run.id">
+										<label>Time</label>
 										<input type = 'hidden' class = 'mg-input bkg-white text-gray'   ng-model="$ctrl.MRS.edit_run.seconds" name="seconds" />
 										<mg-duration ng-model="$ctrl.MRS.edit_run.seconds" ></mg-duration> 
 									</div>
 								</div>
 								<div class = 'row mb-2'>
 									<div class = 'col'>
-										<h1 class = 'mg-h2 text-upper'>Comments <sup>&nbsp;</sup></h1>
-										<div class="mg-h4 ">Say something about your run. </div>
+										<label></label>
 										<textarea  ng-model="$ctrl.MRS.edit_run.comment" class = 'form-control mg-textarea text-left ' placeholder="Say Something about your Run!"></textarea>
 									</div>
 								</div>

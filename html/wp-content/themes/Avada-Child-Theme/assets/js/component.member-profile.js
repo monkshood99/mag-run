@@ -1,3 +1,4 @@
+
 ( function(){
 		
 		var eba = angular.module( 'WebsiteApp' );
@@ -20,6 +21,7 @@
 					$ctrl.currentGoal = false;
 					$ctrl.temp_goal = false
 					$ctrl.ready = true;
+					$ctrl.currentCalView = 'month';
 
 					$ctrl.$onInit = function(){
 						$timeout( function(){ 
@@ -99,6 +101,18 @@
 						$ctrl.runs_total_time = o
 						$timeout();					
 					}
+					$ctrl.toggleCalendarView = function( $view ){
+            if( $view == 'list' ){
+							$ctrl.cal.fullCalendar('changeView', 'listMonth');
+							$ctrl.currentCalView = 'list';
+						}
+            if( $view == 'month' ){
+							$ctrl.cal.fullCalendar('changeView', 'month');
+							$ctrl.currentCalView = 'month';
+						}
+	        }
+
+
 					$ctrl.reset = function(){
 						$timeout.cancel($ctrl.timeout);
 						$ctrl.confirmed = false;
@@ -113,8 +127,9 @@
 						$ctrl.cal = jQuery( $attrs.target ).fullCalendar({
 							events: $ctrl.eventSource,
 							defaultView :'month',
+							height: 'auto',
 // 							defaultView :'listWeek',
-							header : { left: 'month',  center: 'prev title next' , right : 'listWeek' },
+							header : { left: 'month',  center: 'prev title next' , right : 'listMonth' },
 							loading: $ctrl.loading,
 							eventRender: $ctrl.eventRender ,
 							eventAfterAllRender: $ctrl.eventAfterAllRender ,
@@ -124,14 +139,9 @@
 							// navLinks: true, // can click day/week names to navigate views
 						});
 						jQuery( 'body').on( 'click' , '.fc-day' , function(){
-							var date = jQuery( this).data( 'date');
-							if( jQuery(this).hasClass( 'has-event' )) {
-								$ctrl.cal.fullCalendar('changeView', 'listDay');
-								$ctrl.cal.fullCalendar('gotoDate', date );      
-							}else{
-								$ctrl.startAdd( date );
-							}
-
+							var $target = jQuery( this );
+							var date = $target.data( 'date');
+							$ctrl.dayClickedResponse( date, $target )
 						})
 					}// create calendar
 
@@ -318,9 +328,18 @@
 
 					}
 
-					$ctrl.dayClick = function(date) {
-						$ctrl.cal.fullCalendar('changeView', 'listDay');
-						$ctrl.cal.fullCalendar('gotoDate', date );      
+					$ctrl.dayClick = function( date  , $el ) {
+						$target = jQuery(".fc-day[data-date='"+date.format( 'YYYY-MM-DD')+"']").addClass( 'has-events')
+						$ctrl.dayClickedResponse( date, $target );
+					}
+					$ctrl.dayClickedResponse = function( date , $target ){
+						if( $target.hasClass( 'has-event' )) {
+							$ctrl.cal.fullCalendar('changeView', 'listDay');
+							$ctrl.cal.fullCalendar('gotoDate', date );      
+							$ctrl.currentCalView = 'list';
+						}else{
+							$ctrl.startAdd( date );
+						}
 					}
 
 
@@ -405,6 +424,7 @@
 			}
 		}]);
 
+
 		eba.filter( 'convertMinutes' , [ function(){
 			return function( minutes , format ){
 				if( typeof( minutes ) !== 'undefined' ){
@@ -484,14 +504,75 @@
 			}
 		}]);
 		
+
+		// eba.directive('mgDuration', ['$timeout' , function( $timeout ){
+		// 	return {
+		// 		require : 'ngModel',
+		// 		template : "<div>\
+		// 						<input class = 'mg-input bkg-white text-gray' ng-model=\"duration\" type = 'text' placeholder='HH:MM:SS'>\
+		// 					</div>",
+		// 		scope : {ngModel : '=' , objId : '='},
+		// 		link : function($scope, element, attrs, ngModel ){
+		// 			$scope.$watch('objId', function(newVal, oldVal){
+		// 				if(typeof(newVal) != 'undefined'){
+		// 					if( !isNaN(parseInt( ngModel.$viewValue ) ) ){
+		// 						$scope.duration  = seconds_to_toHHMMSS( ngModel.$viewValue );
+		// 					}
+		// 				}
+		// 			});
 	
+		// 			$scope.$watch('duration', function(newVal, oldVal){
+		// 				if(typeof(newVal) == 'string'){
+		// 					var $seconds = hmsToSecondsOnly(newVal);
+		// 					ngModel.$setViewValue($seconds);
+		// 				}
+		// 			});
+	
+		// 			function hmsToSecondsOnly(str) {
+		// 				var p = str.split(':'),
+		// 					s = 0, m = 1;
+					
+		// 				while (p.length > 0) {
+		// 					s += m * parseInt(p.pop(), 10);
+		// 					m *= 60;
+		// 				}
+					
+		// 				return s;
+		// 			}
+	
+		// 			function seconds_to_toHHMMSS( seconds) {
+		// 				var sec_num = parseInt(seconds, 10); // don't forget the second param
+		// 				var hours   = Math.floor(sec_num / 3600);
+		// 				var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+		// 				var seconds = sec_num - (hours * 3600) - (minutes * 60);
+					
+		// 				if (hours   < 10) {hours   = "0"+hours;}
+		// 				if (minutes < 10) {minutes = "0"+minutes;}
+		// 				if (seconds < 10) {seconds = "0"+seconds;}
+		// 				return hours+':'+minutes+':'+seconds;
+		// 			}
+	
+					
+		// 		}
+		// 	}
+		// }]);
+		
 
 	eba.directive('mgDuration', ['$timeout' , function( $timeout ){
 		return {
 			require : 'ngModel',
-			template : "<div>\
-							<input class = 'mg-input bkg-white text-gray' ng-model=\"duration\" type = 'text' placeholder='HH:MM:SS'>\
-						</div>",
+			template : "\
+			<div class = 'row'>\
+				<div class = 'col-md-4'>\
+					<input class = 'mg-input bkg-white text-gray' ng-model=\"duration.hours\" type = 'number' placeholder='HH' ng-change='updateSeconds()'>\
+				</div>\
+				<div class = 'col-md-4'>\
+					<input class = 'mg-input bkg-white text-gray' ng-model=\"duration.minutes\" type = 'number' placeholder='MM' ng-change='updateSeconds()'>\
+				</div>\
+				<div class = 'col-md-4'>\
+					<input class = 'mg-input bkg-white text-gray' ng-model=\"duration.seconds\" type = 'number' placeholder='SS' ng-change='updateSeconds()'>\
+				</div>\
+			</div>",
 			scope : {ngModel : '=' , objId : '='},
 			link : function($scope, element, attrs, ngModel ){
 				$scope.$watch('objId', function(newVal, oldVal){
@@ -501,42 +582,48 @@
 						}
 					}
 				});
+				$scope.updateSeconds = function(){
+					var $seconds = hmsToSecondsOnly($scope.duration);
+					ngModel.$setViewValue($seconds);
+				};
 
-				$scope.$watch('duration', function(newVal, oldVal){
-					if(typeof(newVal) == 'string'){
-						var $seconds = hmsToSecondsOnly(newVal);
-						ngModel.$setViewValue($seconds);
-					}
-				});
+				function hmsToSecondsOnly($duration) {
+					var result = 0 ;
+					var hours = parseInt($duration.hours);
+					var minutes = parseInt($duration.minutes);
+					var seconds = parseInt($duration.seconds);
 
-				function hmsToSecondsOnly(str) {
-					var p = str.split(':'),
-						s = 0, m = 1;
-				
-					while (p.length > 0) {
-						s += m * parseInt(p.pop(), 10);
-						m *= 60;
+					if( !isNaN(hours) ) {
+						result += hours * 3600;
 					}
-				
-					return s;
+					if( !isNaN(minutes) ) {
+						result += minutes * 60;
+					}
+					if( !isNaN(seconds) ) {
+						result += seconds;
+					}
+
+					return result;
 				}
 
 				function seconds_to_toHHMMSS( seconds) {
+					var duration = {};
 					var sec_num = parseInt(seconds, 10); // don't forget the second param
 					var hours   = Math.floor(sec_num / 3600);
 					var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
 					var seconds = sec_num - (hours * 3600) - (minutes * 60);
 				
-					if (hours   < 10) {hours   = "0"+hours;}
-					if (minutes < 10) {minutes = "0"+minutes;}
-					if (seconds < 10) {seconds = "0"+seconds;}
-					return hours+':'+minutes+':'+seconds;
+					duration.hours = hours;
+					duration.minutes = minutes;
+					duration.seconds = seconds;
+					return duration;
+					// return hours+':'+minutes+':'+seconds;
 				}
 
 				
 			}
 		}
-	}])
+	}]);
 
 
 

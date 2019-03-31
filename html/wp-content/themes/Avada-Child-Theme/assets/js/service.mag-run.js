@@ -84,6 +84,7 @@
         }
 
 
+
         $s.deleteRun = function( $run_data ){
             var defer = $q.defer();
             $s.posting = true;
