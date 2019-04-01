@@ -260,6 +260,11 @@
 		</div>
 	</div>
 
+	<div id = 'mobile-view-switch'>
+		<a class = "$ctrl.currentView == 'challenges' ? 'active':''" ng-click="$ctrl.changeView( 'challenges' )" >Challenges</a>
+		<a class = "$ctrl.currentView == 'add_run' ? 'active':''" ng-click="$ctrl.changeView( 'add_run' )">Add Run</a>
+		<a class = "$ctrl.currentView == 'calendar' ? 'active':''" ng-click="$ctrl.changeView( 'calendar' )">Calendar</a>
+	</div>
 
 </div><!-- // athlete calendar --> 
 

@@ -22,6 +22,7 @@
 					$ctrl.temp_goal = false
 					$ctrl.ready = true;
 					$ctrl.currentCalView = 'month';
+					$ctrl.currentView = 'add_run';
 
 					$ctrl.$onInit = function(){
 						$timeout( function(){ 
@@ -110,7 +111,11 @@
 							$ctrl.cal.fullCalendar('changeView', 'month');
 							$ctrl.currentCalView = 'month';
 						}
-	        }
+					}
+					
+					$ctrl.changeView = function( $view ){
+						$ctrl.currentView = $view;
+					}
 
 
 					$ctrl.reset = function(){
@@ -437,30 +442,55 @@
 			}
 		}]);
 
+		eba.filter( 'secondsToTime' , [ function(){
+			return	function ( seconds ) {
+					var sec_num = parseInt(seconds, 10); // don't forget the second param
+					var hours   = Math.floor(sec_num / 3600);
+					var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+					var seconds = sec_num - (hours * 3600) - (minutes * 60);
+				
+					if (hours   < 10) {hours   = "0"+hours;}
+					if (minutes < 10) {minutes = "0"+minutes;}
+					if (seconds < 10) {seconds = "0"+seconds;}
+					return hours+':'+minutes+':'+seconds;
+				}		
+		}])
+
 		eba.directive( 'athleteCalendarRunLogRow' , [ 'MagRunService','$timeout' ,  function( MRS , $timeout ){
 			return {
 				scope : { run : "=run"},
 				template : '\
 					<div class="row run-log-row">\
-						<div class=" col-sm-3 ng-binding">\
-							{{run.miles}} miles\
-							<p style="margin:0"><small>{{run.comment}}</small></p>\
-						</div>\
-						<div class="col-sm-4 ng-binding">{{run.pace_mi == 0 ? \'n/a\' : run.pace_mi | number : 2 | convertMinutes }}  minutes per mile</div>\
-						<div class="col-sm-3 text-right ">\
-							<span ng-show="$ctrl.MRS.confirmingDelete !== run && $ctrl.MRS.deleting !== run"  >\
-								<span class="icon-mg-edit clickable" ng-click="$ctrl.MRS.startEdit( run )"></span>\
-								<span class="fa fas fa-trash-o clickable " ng-click="$ctrl.MRS.confirmDelete( run )"></span>\
-							</span>\
-							<span ng-show="$ctrl.MRS.confirmingDelete == run"  >\
-								<span class="fa fas fa-times-circle-o clickable " ng-click="$ctrl.MRS.cancelDelete()"></span>\
-								<span class="fa fas fa-trash-o clickable" ng-click="$ctrl.deleteRun( run )"></span>\
-							</span>\
-							<span ng-show="$ctrl.MRS.deleting == run" class = "">\
-								<span class="fa fas fa-refresh fa-spin clickable"></span>\
-							</span>\
-							<span class="fa fa-facebook run-log-row-button  clickable " ng-click="$ctrl.MRS.postToFb( run ) "></span>\
-						</div>\
+							<div class = "col-4">\
+								<h6>Distance</h6>\
+								{{run.miles}} miles\
+							</div>\
+							<div class = "col-4">\
+								<h6>Time</h6>\
+								{{run.seconds | secondsToTime}}\
+							</div>\
+							<div class = "col-4">\
+								<h6>Pace</h6>\
+								{{run.pace_mi == 0 ? \'n/a\' : run.pace_mi | number : 2 | convertMinutes }} / mi\
+							</div>\
+							<div class = "col">\
+								<p style="margin:0"><small>{{run.comment}}</small></p>\
+							</div>\
+							<div class = "col">\
+								<span class="fa fa-facebook run-log-row-button  clickable " ng-click="$ctrl.MRS.postToFb( run ) "></span>\
+								<span class="fa fa-twitter run-log-row-button  clickable " ng-click="$ctrl.MRS.postToFb( run ) "></span>\
+								<span ng-show="$ctrl.MRS.confirmingDelete !== run && $ctrl.MRS.deleting !== run"  >\
+									<span class="icon-mg-edit clickable" ng-click="$ctrl.MRS.startEdit( run )"></span>\
+									<span class="fa fas fa-trash-o clickable " ng-click="$ctrl.MRS.confirmDelete( run )"></span>\
+								</span>\
+								<span ng-show="$ctrl.MRS.confirmingDelete == run"  >\
+									<span class="fa fas fa-times-circle-o clickable " ng-click="$ctrl.MRS.cancelDelete()"></span>\
+									<span class="fa fas fa-trash-o clickable" ng-click="$ctrl.deleteRun( run )"></span>\
+								</span>\
+								<span ng-show="$ctrl.MRS.deleting == run" class = "">\
+									<span class="fa fas fa-refresh fa-spin clickable"></span>\
+								</span>\
+							</div>\
 					</div>\
 				',
 				link : function(scope, element, attrs){

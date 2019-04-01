@@ -434,6 +434,33 @@ $mobile_size: 600px;
 }
 
 
+#mobile-view-switch{
+    width:100%;
+    display: flex;
+    flex-direction: row;
+    background: $gray-dark;
+    position: fixed;
+    z-index: 99;
+    height:40px;
+    bottom:0;
+    a{
+        text-align: center;
+        cursor: pointer;
+        color:$gray-light;
+        width:100%;
+        font-weight: bold;
+        font-size:14px;
+        &:hover{
+            color:$yellow;
+        }
+        &.active{
+            color:$yellow;
+            &:hover{
+                color:$white;
+            }
+        }
+    }
+}
 
 
 /** Event Calender **/
