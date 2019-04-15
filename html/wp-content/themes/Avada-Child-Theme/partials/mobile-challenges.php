@@ -58,10 +58,60 @@
 
     </div>
 
-    <div ng-show="$ctrl.currentChallengesView == 'you'">
+    <div ng-show="$ctrl.currentChallengeView == 'you'">
+        <div class = 'current-challenge'>
+            <h4>Challenges</h4>
+            <hr/>
+            <span ng-if="$ctrl.currentGoal.type == 'week'">
+                <h3 class = 'mg-h3'>Run {{$ctrl.currentGoal.value }} Days per Week</h3>
+            </span>
+            <span ng-if="$ctrl.currentGoal.type == 'miles'">
+                <h3 class = 'mg-h3' >Run {{( $ctrl.currentGoal.value /  52   ) | number:2 }} Miles per Week</h3>
+            </span>
+        </div>
 
-    <h2>Swipers </h2>
-	<div class="swiper-container">
+        <div class = 'challenge-streak'>
+            <h4>Challenge Streak</h4>
+            <hr/>
+            <div class ='stats-row d-flex'>
+                <div class = 'stats__label mr-1'>
+                    <div class = 'label-title'>Current Streak</div>
+                    <div class = 'label-value'>5 Weeks</div>
+                </div>
+                <div class = 'stats__label pl-1'>
+                    <div class = 'label-title'> Longest Streak</div>
+                    <div class = 'label-value'> 8 Weeks</div>
+                </div>
+            </div>
+        </div>
+
+        <div class = 'challenge-streak'>
+            <h4>Stats</h4>
+            <hr/>
+            <h3>Year-To-Date</h3>
+            <div class ='stats-row d-flex  mb-2 '>
+                <div class = 'stats__label mr-1 '>
+                    <div class = 'label-title'>Total Runs</div>
+                    <div class = 'label-value'>{{ $ctrl.MRS.userStats.this_year.runs_total }}</div>
+                </div>
+                <div class = 'stats__label pl-1'>
+                    <div class = 'label-title'> Total Miles</div>
+                    <div class = 'label-value'>{{$ctrl.MRS.userStats.this_year.mi_total}} mi</div>
+                </div>
+            </div>
+            <div class ='stats-row d-flex'>
+                <div class = 'stats__label mr-1'>
+                    <div class = 'label-title'>Longest Run</div>
+                    <div class = 'label-value'>{{$ctrl.MRS.userStats.this_year.longest_run}} mi</div>
+                </div>
+                <div class = 'stats__label pl-1'>
+                    <div class = 'label-title'> Fastest Pace</div>
+                    <div class = 'label-value'> 9:55 mi</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- <div class="swiper-container">
             <div class="swiper-wrapper">
             <div class="swiper-slide">Slide 1</div>
             <div class="swiper-slide">Slide 2</div>
@@ -74,15 +124,12 @@
             <div class="swiper-slide">Slide 9</div>
             <div class="swiper-slide">Slide 10</div>
             </div>
-            <!-- Add Pagination -->
             <div class="swiper-pagination"></div>
-            <!-- Add Arrows -->
             <div class="swiper-button-next"></div>
             <div class="swiper-button-prev"></div>
         </div>  
 
-    </div>
-    <h2>Swipers </h2>
+    </div> -->
 
 
 

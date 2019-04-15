@@ -798,6 +798,7 @@ body{
 }
 .stats-row{
     .stats__label{
+        min-width:100px;
         .label-title{ font-size:12px; line-height: 12px;}
         border-left:1px solid $gray-light;
         &:first-child{

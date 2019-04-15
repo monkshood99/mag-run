@@ -22,7 +22,7 @@
 					$ctrl.temp_goal = false
 					$ctrl.ready = true;
 					$ctrl.currentCalView = 'month';
-					$ctrl.currentChallengeView = 'community';
+					$ctrl.currentChallengeView = 'you';
 					$ctrl.currentView = 'challenges';
 
 					$ctrl.$onInit = function(){
@@ -158,17 +158,18 @@
 					$ctrl.toggleChallengeView = function( $view ){
 						$ctrl.currentChallengeView = $view;
 						if( $view == 'you' ){
-							var swiper = new Swiper('.swiper-container', {
-								pagination: {
-									el: '.swiper-pagination',
-									type: 'progressbar',
-								},
-								navigation: {
-									nextEl: '.swiper-button-next',
-									prevEl: '.swiper-button-prev',
-								},
-							});
-							alert( swiper )
+							$timeout( function(){
+								var swiper = new Swiper('.swiper-container', {
+									pagination: {
+										el: '.swiper-pagination',
+										type: 'progressbar',
+									},
+									navigation: {
+										nextEl: '.swiper-button-next',
+										prevEl: '.swiper-button-prev',
+									},
+								});	
+							})
 						
 						}
 					}
@@ -727,15 +728,3 @@
 		
 })();
 
-jQuery( document ).ready( function(){
-	var swiper = new Swiper('.swiper-container', {
-		pagination: {
-			el: '.swiper-pagination',
-			type: 'progressbar',
-		},
-		navigation: {
-			nextEl: '.swiper-button-next',
-			prevEl: '.swiper-button-prev',
-		},
-	});
-});

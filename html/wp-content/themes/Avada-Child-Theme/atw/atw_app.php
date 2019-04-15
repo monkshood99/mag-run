@@ -132,7 +132,7 @@ class Atw_app{
 
 	public static function get_user_totals( $user_id = false ){
 		//date_default_timezone_set ( 'America/Denver' ); 
-		$default_totals = ( object) [ 'runs_total'=> 0, 'km_total' => 0, 'mi_total'=> 0 ];
+		$default_totals = ( object) [ 'runs_total'=> 0, 'km_total' => 0, 'mi_total'=> 0 , 'longest_run'=> 0, 'fastest_pace' => 0  ];
 
 		// get all runs
 		$where=" `user`.`id` = '{$user_id}' OR `user_id` = '{$user_id}' ";
@@ -156,11 +156,23 @@ class Atw_app{
 		$start = date('Y-m-d', strtotime('1/01'));
 		$end = date('Y-m-d', strtotime('12/31'));
 		$where = "`run_date` >= '{$start}' AND `run_date` <= '{$end}' AND ( `user`.`id` = '{$user_id}' OR `user_id` = '{$user_id}') ";
-		$this_year 	= pods( 'run')->find( [ 'select'=> 'COUNT(`t`.`id`) as `runs_total` ,FORMAT(SUM(kilometers),1) as `km_total` , FORMAT(SUM(miles),1) as `mi_total` ' , 'where'=>  $where , 'limit'=> '-1' ]  )->data();
+		$this_year 	= pods( 'run')->find( [ 
+			'select'=> 'COUNT(`t`.`id`) as `runs_total` ,FORMAT(SUM(kilometers),1) as `km_total` , FORMAT(SUM(miles),1) as `mi_total` ' , 
+			'where'=>  $where , 'limit'=> '-1' ]  )->data();
+		// get the longest run this year 
+		$longest_run = pods( 'run')->find( [ 
+			'select'=> '`miles`' , 
+			'where'=>  $where , 
+			'limit'=> '1',
+			'orderby'=> '`miles` DESC'
+		]  )->data();
+		// select mi from table where user-id limit 1 sort mi asc
 		$this_year = return_if( $this_year, 0  , $default_totals  );
 		$this_year->km_total = is_numeric( $this_year->km_total ) ? $this_year->km_total : 0  ;
 		$this_year->mi_total = is_numeric( $this_year->mi_total ) ? $this_year->mi_total : 0  ;
-
+		if( return_if( $longest_run, 0 )){
+			$this_year->longest_run = $longest_run[0]->miles;
+		}
 		$data->all_time = json_decode( json_encode( $data )) ;
 		$data->this_week = $this_week;
 		$data->this_year = $this_year;
