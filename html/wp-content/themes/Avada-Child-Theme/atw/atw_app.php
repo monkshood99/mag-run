@@ -104,7 +104,7 @@ class Atw_app{
 		// foreach( $user_meta_ as $item ){
 		// 	$user_meta->{$item->meta_key} = $item->meta_value;
 		// }
-		$goal = get_usermeta( $user_id, 'mepr_choose_your_running_challenge');
+		$goal = get_user_meta( $user_id, 'mepr_choose_your_running_challenge', true );
 		$goal = explode(  '-' , $goal );
 
 		$goal_ = ( object ) [ 'type' => 'week', 'value' => '4'];

@@ -22,7 +22,8 @@
 					$ctrl.temp_goal = false
 					$ctrl.ready = true;
 					$ctrl.currentCalView = 'month';
-					$ctrl.currentView = 'add_run';
+					$ctrl.currentChallengeView = 'community';
+					$ctrl.currentView = 'challenges';
 
 					$ctrl.$onInit = function(){
 						$timeout( function(){ 
@@ -54,6 +55,46 @@
 						});
 						$ctrl.getUserGoal();
 
+						$ctrl.getCommunityData();
+
+					}
+					$ctrl.getCommunityData = function(){
+						var data = {
+							distance : 9600,
+							members : 2400,
+							runs : 4800
+						}
+						var challenges = [
+							{
+								"id" : "run-across-america",
+								"label" : "Run Across America",
+								"goal" : 2569,
+								"icon_start" : "icon-bridge",
+								"icon_end" : "icon-liberty"
+							},
+							{
+								"id" : "run-around-the-world",
+								"label" : "Run Around the World",
+								"goal" : 24901,
+								"icon_start" : "icon-world-around-start",
+								"icon_end" : "icon-world-around-start"
+							},
+							{
+								"id" : "run-to-the-moon",
+								"label" : "Run to the Moon",
+								"goal" : 238855,
+								"icon_start" : "icon-world",
+								"icon_end" : "icon-moon"
+							}
+						];
+
+						challenges.forEach( function( challenge ){
+							challenge.progress = data.distance,
+							challenge.progressPercent = ( data.distance / challenge.goal ) * 100  
+						});
+						$ctrl.communityChallenges = challenges;
+						$ctrl.communityData = data;
+						return $ctrl.communityChallenges;
 					}
 					$ctrl.getLogRuns = function(){
 						// $ctrl.MRS.getLogRuns( $ctrl.run_data  ).then( 
@@ -102,6 +143,7 @@
 						$ctrl.runs_total_time = o
 						$timeout();					
 					}
+
 					$ctrl.toggleCalendarView = function( $view ){
             if( $view == 'list' ){
 							$ctrl.cal.fullCalendar('changeView', 'listMonth');
@@ -112,9 +154,28 @@
 							$ctrl.currentCalView = 'month';
 						}
 					}
-					
+
+					$ctrl.toggleChallengeView = function( $view ){
+						$ctrl.currentChallengeView = $view;
+						if( $view == 'you' ){
+							var swiper = new Swiper('.swiper-container', {
+								pagination: {
+									el: '.swiper-pagination',
+									type: 'progressbar',
+								},
+								navigation: {
+									nextEl: '.swiper-button-next',
+									prevEl: '.swiper-button-prev',
+								},
+							});
+							alert( swiper )
+						
+						}
+					}
+										
 					$ctrl.changeView = function( $view ){
 						$ctrl.currentView = $view;
+						if( $view == 'calendar' ) 	$ctrl.createCalendar();
 					}
 
 
@@ -254,12 +315,18 @@
 							function( response ){	
 								if( response.success ){
 									$ctrl.cal.fullCalendar('refetchEvents');
-									//$ctrl.getLogRuns();
+									jQuery('#modal-run-added').modal('show');
+									console.log(response)
+									$ctrl.MRS.new_run = $ctrl.run_data;
+									// $ctrl.MRS.new_run.run_date = moment( run.run_date ).toDate();
+									// $ctrl.MRS.new_run.distance = parseFloat( run.distance );
+									// $ctrl.MRS.new_run.seconds = parseInt( run.seconds );
 								}
 							}, 
 							function( response ){ }
 						)
 					}
+
 					$ctrl.startEdit = function( run ){
 						jQuery('#run-edit-modal').modal('show');
 						$ctrl.MRS.edit_run = run;
@@ -461,22 +528,22 @@
 				scope : { run : "=run"},
 				template : '\
 					<div class="row run-log-row">\
-							<div class = "col-4">\
+							<div class = "col-3">\
 								<h6>Distance</h6>\
 								{{run.miles}} miles\
 							</div>\
-							<div class = "col-4">\
+							<div class = "col-3 ">\
 								<h6>Time</h6>\
 								{{run.seconds | secondsToTime}}\
 							</div>\
-							<div class = "col-4">\
+							<div class = "col-3">\
 								<h6>Pace</h6>\
 								{{run.pace_mi == 0 ? \'n/a\' : run.pace_mi | number : 2 | convertMinutes }} / mi\
 							</div>\
-							<div class = "col">\
+							<div class = "col-12">\
 								<p style="margin:0"><small>{{run.comment}}</small></p>\
 							</div>\
-							<div class = "col">\
+							<div class = "col-12 ">\
 								<span class="fa fa-facebook run-log-row-button  clickable " ng-click="$ctrl.MRS.postToFb( run ) "></span>\
 								<span class="fa fa-twitter run-log-row-button  clickable " ng-click="$ctrl.MRS.postToFb( run ) "></span>\
 								<span ng-show="$ctrl.MRS.confirmingDelete !== run && $ctrl.MRS.deleting !== run"  >\
@@ -593,13 +660,13 @@
 			require : 'ngModel',
 			template : "\
 			<div class = 'row'>\
-				<div class = 'col-md-4'>\
+				<div class = 'col-4'>\
 					<input class = 'mg-input bkg-white text-gray' ng-model=\"duration.hours\" type = 'number' placeholder='HH' ng-change='updateSeconds()'>\
 				</div>\
-				<div class = 'col-md-4'>\
+				<div class = 'col-4'>\
 					<input class = 'mg-input bkg-white text-gray' ng-model=\"duration.minutes\" type = 'number' placeholder='MM' ng-change='updateSeconds()'>\
 				</div>\
-				<div class = 'col-md-4'>\
+				<div class = 'col-4'>\
 					<input class = 'mg-input bkg-white text-gray' ng-model=\"duration.seconds\" type = 'number' placeholder='SS' ng-change='updateSeconds()'>\
 				</div>\
 			</div>",
@@ -655,7 +722,20 @@
 		}
 	}]);
 
-
+ 
 
 		
 })();
+
+jQuery( document ).ready( function(){
+	var swiper = new Swiper('.swiper-container', {
+		pagination: {
+			el: '.swiper-pagination',
+			type: 'progressbar',
+		},
+		navigation: {
+			nextEl: '.swiper-button-next',
+			prevEl: '.swiper-button-prev',
+		},
+	});
+});

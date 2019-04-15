@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?hcinxe');
-  src:  url('fonts/icomoon.eot?hcinxe#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?hcinxe') format('truetype'),
-    url('fonts/icomoon.woff?hcinxe') format('woff'),
-    url('fonts/icomoon.svg?hcinxe#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?8dmgv3');
+  src:  url('fonts/icomoon.eot?8dmgv3#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?8dmgv3') format('truetype'),
+    url('fonts/icomoon.woff?8dmgv3') format('woff'),
+    url('fonts/icomoon.svg?8dmgv3#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -24,6 +24,38 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-calendar:before {
+  content: "\e909";
+}
+.icon-challenges:before {
+  content: "\e90a";
+}
+.icon-moon:before {
+  content: "\e904";
+  color: #797979;
+}
+.icon-world1:before {
+  content: "\e907";
+  color: #797979;
+}
+.icon-world-around-end:before {
+  content: "\e905";
+  color: #797979;
+}
+.icon-world-around-start:before {
+  content: "\e906";
+  color: #797979;
+}
+.icon-world:before {
+  content: "\e908";
+  color: #797979;
+}
+.icon-bridge:before {
+  content: "\e902";
+}
+.icon-liberty:before {
+  content: "\e903";
+}
 .icon-mg-edit:before {
   content: "\e901";
 }
