@@ -22,8 +22,8 @@
 					$ctrl.temp_goal = false
 					$ctrl.ready = true;
 					$ctrl.currentCalView = 'month';
-					$ctrl.currentChallengeView = 'you';
-					$ctrl.currentView = 'challenges';
+					$ctrl.currentChallengeView = 'community';
+					$ctrl.currentView = 'add_run';
 
 					$ctrl.$onInit = function(){
 						$timeout( function(){ 
@@ -176,7 +176,11 @@
 										
 					$ctrl.changeView = function( $view ){
 						$ctrl.currentView = $view;
-						if( $view == 'calendar' ) 	$ctrl.createCalendar();
+						if( $view == 'calendar' )	{
+							$timeout( function(){
+								$ctrl.cal.fullCalendar('render');
+							});
+						}
 					}
 
 
@@ -314,11 +318,12 @@
 						$run_data.run_date = moment($ctrl.run_data.run_date).format( 'YYYY-MM-DD');
 						$ctrl.MRS.addRun( $run_data ).then( 
 							function( response ){	
+
 								if( response.success ){
 									$ctrl.cal.fullCalendar('refetchEvents');
 									jQuery('#modal-run-added').modal('show');
 									console.log(response)
-									$ctrl.MRS.new_run = $ctrl.run_data;
+									$ctrl.MRS.new_run = response.new_run;
 									// $ctrl.MRS.new_run.run_date = moment( run.run_date ).toDate();
 									// $ctrl.MRS.new_run.distance = parseFloat( run.distance );
 									// $ctrl.MRS.new_run.seconds = parseInt( run.seconds );
@@ -329,12 +334,13 @@
 					}
 
 					$ctrl.startEdit = function( run ){
-						jQuery('#run-edit-modal').modal('show');
-						$ctrl.MRS.edit_run = run;
-						$ctrl.MRS.edit_run.run_date = moment( run.run_date ).toDate();
-						$ctrl.MRS.edit_run.distance = parseFloat( run.distance );
-						$ctrl.MRS.edit_run.seconds = parseInt( run.seconds );
-						$timeout();
+						jQuery('#modal-run-added').modal('hide');
+						// jQuery('#run-edit-modal').modal('show');
+						// $ctrl.MRS.edit_run = run;
+						// $ctrl.MRS.edit_run.run_date = moment( run.run_date ).toDate();
+						// $ctrl.MRS.edit_run.distance = parseFloat( run.distance );
+						// $ctrl.MRS.edit_run.seconds = parseInt( run.seconds );
+						// $timeout();
 					}
 
 					$ctrl.startAdd = function( date ){
@@ -452,7 +458,7 @@
 						var run = angular.copy( event );
 						delete( run.source );
 						run = JSON.stringify( run ) ;
-						$row = '<div class = "container-fluid" athlete-calendar-run-log-row run=\''+ run +'\'></div>'
+						$row = '<div  athlete-calendar-run-log-row run=\''+ run +'\'></div>'
 						var $target= element.find( '.fc-list-item-title');
 						var app = jQuery('[athlete-calendar]');
 						angular.element(app).injector().invoke(function($compile) {
@@ -528,37 +534,37 @@
 			return {
 				scope : { run : "=run"},
 				template : '\
-					<div class="row run-log-row">\
-							<div class = "col-3">\
-								<h6>Distance</h6>\
-								{{run.miles}} miles\
+					<div class = "">\
+						<div class=" run-log-row ">\
+							<div class = "stats-row ">\
+								<div class = "stats__label">\
+									<h6 class = "label-title mg-h5">Distance</h6>\
+									<span class = "label-value mg-h2-light"><b>{{run.miles}} miles </b></span>\
+								</div>\
+								<div class = "stats__label">\
+									<h5 class = "label-title mg-h5">Time</h6>\
+									<span class = "label-value mg-h2-light"><b>{{run.seconds | secondsToTime}}</b></span>\
+								</div>\
+								<div class = "stats__label">\
+									<h6 class = "label-title mg-h5">Pace</h6>\
+									<span class =" label-value mg-h2-light">{{run.pace_mi == 0 ? \'n/a\' : run.pace_mi | number : 2 | convertMinutes }} / mi</b></span>\
+								</div>\
 							</div>\
-							<div class = "col-3 ">\
-								<h6>Time</h6>\
-								{{run.seconds | secondsToTime}}\
+							<div class = "">\
+								<div class = "mg-h5-light">{{run.comment}}</div>\
 							</div>\
-							<div class = "col-3">\
-								<h6>Pace</h6>\
-								{{run.pace_mi == 0 ? \'n/a\' : run.pace_mi | number : 2 | convertMinutes }} / mi\
+							<div class = "bkg-gray-light mt-1">\
+								<div class = "d-flex bg-gray-light justify-content-space-evenly buttons-bar">\
+									<div class="fa fa-facebook run-log-row-button  clickable " ng-click="$ctrl.MRS.postToFb( run ) "></div>\
+									<div class="fa fa-twitter run-log-row-button  clickable " ng-click="$ctrl.MRS.postToFb( run ) "></div>\
+									<span class="icon-mg-edit clickable" ng-click="$ctrl.MRS.startEdit( run )" ng-show="$ctrl.MRS.confirmingDelete !== run && $ctrl.MRS.deleting !== run" ></span>\
+									<span class="fa fas fa-trash-o clickable " ng-click="$ctrl.MRS.confirmDelete( run )" ng-show="$ctrl.MRS.confirmingDelete !== run && $ctrl.MRS.deleting !== run" ></span>\
+									<span class="fa fas fa-times-circle-o clickable " ng-click="$ctrl.MRS.cancelDelete()" ng-show="$ctrl.MRS.confirmingDelete == run" ></span>\
+									<span class="fa fas fa-trash-o clickable" ng-click="$ctrl.deleteRun( run )" ng-show="$ctrl.MRS.confirmingDelete == run" ></span>\
+									<span class="fa fas fa-refresh fa-spin clickable" ng-show="$ctrl.MRS.deleting == run" ></span>\
+								</div>\
 							</div>\
-							<div class = "col-12">\
-								<p style="margin:0"><small>{{run.comment}}</small></p>\
-							</div>\
-							<div class = "col-12 ">\
-								<span class="fa fa-facebook run-log-row-button  clickable " ng-click="$ctrl.MRS.postToFb( run ) "></span>\
-								<span class="fa fa-twitter run-log-row-button  clickable " ng-click="$ctrl.MRS.postToFb( run ) "></span>\
-								<span ng-show="$ctrl.MRS.confirmingDelete !== run && $ctrl.MRS.deleting !== run"  >\
-									<span class="icon-mg-edit clickable" ng-click="$ctrl.MRS.startEdit( run )"></span>\
-									<span class="fa fas fa-trash-o clickable " ng-click="$ctrl.MRS.confirmDelete( run )"></span>\
-								</span>\
-								<span ng-show="$ctrl.MRS.confirmingDelete == run"  >\
-									<span class="fa fas fa-times-circle-o clickable " ng-click="$ctrl.MRS.cancelDelete()"></span>\
-									<span class="fa fas fa-trash-o clickable" ng-click="$ctrl.deleteRun( run )"></span>\
-								</span>\
-								<span ng-show="$ctrl.MRS.deleting == run" class = "">\
-									<span class="fa fas fa-refresh fa-spin clickable"></span>\
-								</span>\
-							</div>\
+						</div>\
 					</div>\
 				',
 				link : function(scope, element, attrs){
@@ -585,12 +591,13 @@
 					}
 
 					$ctrl.startEdit = function( run ){
-						jQuery('#run-edit-modal').modal('show');
-						$ctrl.MRS.edit_run = run;
-						$ctrl.MRS.edit_run.run_date = moment( run.run_date ).toDate();
-						$ctrl.MRS.edit_run.distance = parseFloat( run.distance );
-						$ctrl.MRS.edit_run.minutes = parseInt( run.minutes );
-						$timeout();
+						jQuery('#modal-run-added').modal('show');
+						// jQuery('#run-edit-modal').modal('show');
+						// $ctrl.MRS.edit_run = run;
+						// $ctrl.MRS.edit_run.run_date = moment( run.run_date ).toDate();
+						// $ctrl.MRS.edit_run.distance = parseFloat( run.distance );
+						// $ctrl.MRS.edit_run.minutes = parseInt( run.minutes );
+						// $timeout();
 					}
 
 

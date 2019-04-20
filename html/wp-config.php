@@ -40,6 +40,30 @@ define('DB_COLLATE', '');
 define( 'WP_HOME', 'https://mag-run.local' );
 define( 'WP_SITEURL', 'https://mag-run.local' );
 
+
+
+// ----- STAGEING  -
+// define('REVISR_WORK_TREE', '/home/magnol38/public_html/'); // Added by Revisr
+// define('REVISR_GIT_PATH', ''); // Added by Revisr
+// define('DB_NAME','magnol38_wp964_st1');
+// define('DB_USER','magnol38_st1');
+// define('DB_PASSWORD','76qOTHO_6gMzUXn18ktc');
+// define('DB_HOST', 'localhost');
+// define('DB_CHARSET', 'utf8mb4');
+// define('DB_COLLATE', '');
+
+// ----- PRODUCTION  -
+// define('REVISR_WORK_TREE', '/home/magnol38/public_html/'); // Added by Revisr
+// define('REVISR_GIT_PATH', ''); // Added by Revisr
+// define('DB_NAME', 'magnol38_wp964');
+// define('DB_USER', 'magnol38_wp964');
+// define('DB_PASSWORD', '-S6y33Z0.p');
+// define('DB_HOST', 'localhost');
+// define('DB_CHARSET', 'utf8mb4');
+// define('DB_COLLATE', '');
+
+
+
 /**#@+
  * Authentication Unique Keys and Salts.
  *

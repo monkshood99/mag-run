@@ -152,6 +152,9 @@ gulp.task('clean', function (cb) {
 *	Watch for changes and process
 **/
 gulp.task('default',  function () {
+	browserSync.init({ proxy: 'https://mag-run.local' });
+	syncing = true;
+	mx_log( ['Running MX Site with Live Reload Server']);
 //   gulp.watch('./src/js/**/*.js', ['deploy']);
   gulp.watch('./assets/scss/**/*.scss', ['styles']);
 //   gulp.watch(['./src/files/**/*','./src/partials/**/*', './src/layouts/**/*' ]);

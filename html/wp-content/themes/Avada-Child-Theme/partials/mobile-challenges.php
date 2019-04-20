@@ -1,26 +1,25 @@
 <div class = 'container mb-4' ng-show="$ctrl.currentView == 'challenges'">
 
 
-	<div class = 'view-switcher  pb-3'>
-		<a class = "{{$ctrl.currentChallengeView == 'community' ? 'active' : ''}}" ng-click="$ctrl.toggleChallengeView( 'community' )"  >Community</a>
-		<a class = "{{$ctrl.currentChallengeView == 'you' ? 'active' : ''}}"  ng-click="$ctrl.toggleChallengeView( 'you' )" >You</a>
+	<div class = 'view-switcher mb-1'>
+		<a class = "{{$ctrl.currentChallengeView == 'community' ? 'active' : ''}}" ng-click="$ctrl.toggleChallengeView( 'community' )"  ><span class = 'mg-h5' >Community</span></a>
+		<a class = "{{$ctrl.currentChallengeView == 'you' ? 'active' : ''}}"  ng-click="$ctrl.toggleChallengeView( 'you' )" ><span class = 'mg-h5'>You</span></a>
 	</div>
 
 
     <div ng-show="$ctrl.currentChallengeView == 'community'">
-        <h4>Challenges</h4>
-        <hr/>
-        <div class = 'challenge-row py-2' ng-repeat="challenge in $ctrl.communityChallenges">
-            <h3 class = 'challenge-row__header'>{{challenge.label}} <a class = 'question'>?</a></h3>
+        <h4 class = 'mg-h5 with-border'>CHALLENGES</h4>
+        <div class = 'challenge-row py-1' ng-repeat="challenge in $ctrl.communityChallenges">
+            <h3 class = 'challenge-row__header mg-h1-light'>{{challenge.label}} <a class = 'question'>?</a></h3>
             <div class ='challenge-row__labels d-flex'>
                 <div class = 'challenge-row__label mr-1'>
-                    <div class = 'label-title'> Progress</div>
-                    <div class = 'label-title'> {{challenge.progress}} mi</div>
+                    <div class = 'label-title mg-h5'> Progress</div>
+                    <div class = 'label-title h3-light'> {{challenge.progress}} mi</div>
                 </div>
 
                 <div class = 'challenge-row__label pl-1'>
-                    <div class = 'label-title'> Goal Distance</div>
-                    <div class = 'label-title'> {{challenge.goal | number}} mi</div>
+                    <div class = 'label-title mg-h5'> Goal Distance</div>
+                    <div class = 'label-title h3-light'> {{challenge.goal | number}} mi</div>
                 </div>
             </div>
             <div class = 'd-flex align-items-baseline justify-content-space-between challenge-row__progress'>
@@ -60,19 +59,17 @@
 
     <div ng-show="$ctrl.currentChallengeView == 'you'">
         <div class = 'current-challenge'>
-            <h4>Challenges</h4>
-            <hr/>
+            <h4 class = 'mg-h5 with-border'>YOUR CHALLENGE</h4>
             <span ng-if="$ctrl.currentGoal.type == 'week'">
-                <h3 class = 'mg-h3'>Run {{$ctrl.currentGoal.value }} Days per Week</h3>
+                <h3 class = 'mg-h1-light'>Run {{$ctrl.currentGoal.value }} Days per Week</h3>
             </span>
             <span ng-if="$ctrl.currentGoal.type == 'miles'">
-                <h3 class = 'mg-h3' >Run {{( $ctrl.currentGoal.value /  52   ) | number:2 }} Miles per Week</h3>
+                <h3 class = 'mg-h1-light' >Run {{( $ctrl.currentGoal.value /  52   ) | number:2 }} Miles per Week</h3>
             </span>
         </div>
 
         <div class = 'challenge-streak'>
-            <h4>Challenge Streak</h4>
-            <hr/>
+            <h4 class = "mg-h5 with-border" >CHALLENGE STREAK</h4>
             <div class ='stats-row d-flex'>
                 <div class = 'stats__label mr-1'>
                     <div class = 'label-title'>Current Streak</div>
@@ -86,9 +83,8 @@
         </div>
 
         <div class = 'challenge-streak'>
-            <h4>Stats</h4>
-            <hr/>
-            <h3>Year-To-Date</h3>
+            <h4 class = "mg-h5 with-border"  >STATS</h4>
+            <h3 class = 'mg-h1-light' >Year-To-Date</h3>
             <div class ='stats-row d-flex  mb-2 '>
                 <div class = 'stats__label mr-1 '>
                     <div class = 'label-title'>Total Runs</div>
@@ -106,7 +102,7 @@
                 </div>
                 <div class = 'stats__label pl-1'>
                     <div class = 'label-title'> Fastest Pace</div>
-                    <div class = 'label-value'> 9:55 mi</div>
+                    <div class = 'label-value'> {{$ctrl.MRS.userStats.this_year.fastest_pace == 0 ? 'n/a' : $ctrl.MRS.userStats.this_year.fastest_pace | number : 2 | convertMinutes }} /mi</div>
                 </div>
             </div>
         </div>
@@ -128,61 +124,9 @@
             <div class="swiper-button-next"></div>
             <div class="swiper-button-prev"></div>
         </div>  
-
-    </div> -->
-
-
+-->
+    </div> 
 
 
-    <div class = 'row text-center'>
-        <div class = 'col-sm-4'>
-            <div class = 'mg-display-1' ng-cloak >{{$ctrl.MRS.userStats[$ctrl.runs_total_time.value].runs_total}}</div>
-            <div class="mg-h2 text-upper">Total Runs</div>
-            <h4 class = 'mg-h4' ng-cloak >
-                {{$ctrl.runs_total_time.label}} 
-                <span class = 'fa fas fa-caret-{{changing_runs_total_time ? "up" : "down"}}' ng-click="changing_runs_total_time = changing_runs_total_time ? false : true " ></span>
-            </h4>
-            <div class = 'toggle-drop' ng-show="changing_runs_total_time" ng-cloak >
-                <button type = 'button' class = 'time-toggle' ng-repeat="o in $ctrl.run_time_options" ng-click="$ctrl.change_period( o )">{{o.label}}.</button>
-            </div>
-        </div>
-        <div class = 'col-sm-4'>
-            <div class = 'mg-display-1' ng-cloak >
-                {{$ctrl.MRS.userStats[$ctrl.runs_total_time.value].mi_total}}
-            </div>
-            <div class="mg-h2 text-upper">Total Miles</div>
-            <div class = 'relative'>
-                <h4 class = 'mg-h4' ng-cloak >
-                    {{$ctrl.runs_total_time.label}} 
-                    <span class = 'fa fas fa-caret-{{changing_runs_miles_time ? "up" : "down"}}' ng-click="changing_runs_miles_time = changing_runs_miles_time ? false : true " ></span>
-                </h4>
-                <div class = 'toggle-drop' ng-show="changing_runs_miles_time" ng-cloak >
-                    <button type = 'button' class = 'time-toggle'ng-repeat="o in $ctrl.run_time_options" ng-click="$ctrl.change_period( o )">{{o.label}}.</button>
-                </div>
-            </div>
-        </div>
-        <div class = 'col-sm-4 this-week-goal {{$ctrl.goalSucceeded() ? "success" : ""}}'>
-            <div class = 'success-check'>
-                <span class = 'icon-check-large'></span>
-            </div>
-            <div class = 'success-text'>
-                <div class = 'mg-display-1' ng-cloak >
-                    {{$ctrl.MRS.userStats.this_week[$ctrl.goalValueType]}}
-                </div>
-                <div class="mg-h2 text-upper" ng-cloak>{{$ctrl.goalLabel}}</div>
-                <h4 class = 'mg-h4' ng-cloak >
-                    <span ng-if="$ctrl.currentGoal.type == 'week'">
-                        Shoot for {{$ctrl.currentGoal.value}}!
-                    </span>
-                    <span ng-if="$ctrl.currentGoal.type == 'miles'">
-                        Shoot for {{( $ctrl.currentGoal.value /  52   ) | number:2 }}!
-                    </span>
-                    <span class = 'fa fas fa-caret-{{chaging_goal ? "up" : "down"}}' ng-click="chaging_goal = chaging_goal ? false : true " ></span>
-                </h4>
-                <div class = 'toggle-drop' ng-show="chaging_goal" ng-cloak>
-                    <button type = 'button' class = 'time-toggle' ng-repeat="o in $ctrl.goalOptions" ng-if="o.option_value !== 'none'" ng-click="$ctrl.change_goal( o )">{{o.option_name}}.</button>
-                </div>
-            </div>
-        </div>
-    </div><!-- // row --> 
-</div><!-- // container --> 
+
+</div><!-- challenge view --> 

@@ -166,12 +166,27 @@ class Atw_app{
 			'limit'=> '1',
 			'orderby'=> '`miles` DESC'
 		]  )->data();
+		$fastest_pace = pods( 'run')->find( [ 
+			'select'=> '`pace_mi`' , 
+			'where'=>  $where , 
+			'limit'=> '1',
+			'orderby'=> '`pace_mi` DESC'
+		]  )->data();
+		// $fastest_pace = pods( 'run')->find( [ 
+		// 	'select'=> ' miles, seconds , ( `miles` DIV `seconds` )  as pace' , 
+		// 	'where'=>  $where , 
+		// 	'limit'=> '1',
+		// 	'orderby'=> '`pace` DESC'
+		// ]  )->data->sql;
 		// select mi from table where user-id limit 1 sort mi asc
 		$this_year = return_if( $this_year, 0  , $default_totals  );
 		$this_year->km_total = is_numeric( $this_year->km_total ) ? $this_year->km_total : 0  ;
 		$this_year->mi_total = is_numeric( $this_year->mi_total ) ? $this_year->mi_total : 0  ;
 		if( return_if( $longest_run, 0 )){
 			$this_year->longest_run = $longest_run[0]->miles;
+		}
+		if( return_if( $fastest_pace, 0 )){
+			$this_year->fastest_pace = $fastest_pace[0]->pace_mi;
 		}
 		$data->all_time = json_decode( json_encode( $data )) ;
 		$data->this_week = $this_week;
@@ -231,11 +246,10 @@ class Atw_app{
 
 			$success = pods('run')->save( ( array ) $data );
 			if( $success ){
-				$new_run = [
-					'title' => $data->distance . ' ' .$data->unit,
-					'start' => date( 'Y-m-d 12:00:00', strtotime( $data->run_date)) ,
-					'end' => date( 'Y-m-d 13:00:00', strtotime( $data->run_date))
-				];
+				$new_run 	= pods( 'run')->find( [
+					 'where'=>  "`id` = '{$success}'" , 
+					 'limit'=> '1' ]  
+					)->data()[0];
 			}
 			$userStats = static::get_user_totals( $user_id );
 		}

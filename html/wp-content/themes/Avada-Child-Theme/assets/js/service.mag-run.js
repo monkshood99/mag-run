@@ -5,6 +5,8 @@
         var $s = this;
 
         $s.userStats = {}
+
+        
         $s.addRun = function( $run_data ){
             var defer = $q.defer();
             $s.posting = true;
@@ -36,6 +38,7 @@
         }
 
         $s.startEdit = function( run ){
+            jQuery('#modal-run-added').modal('hide');
             jQuery('#run-edit-modal').modal('show');
             $s.edit_run = run;
             $s.edit_run.run_date = moment( run.run_date ).toDate();
@@ -89,13 +92,17 @@
             var defer = $q.defer();
             $s.posting = true;
             $run_data.unit = 'mi';
+            $s.deleting = $s.confirmingDelete;
             $http.post( '/?mag::delete-my-run', $run_data ).then(
                 function( response ){
+                    $s.confirmingDelete = false;
+                    $s.deleting = false;
                     $s.posting = false;
                     if( response.data.success ){
                         $s.userStats = response.data.userStats;
                         $s.success = true;
                         $timeout( function() { $s.success = false }, 350 );
+                        jQuery('#modal-run-added').modal('hide');
                     }else{
                         $s.error = true;
                     }

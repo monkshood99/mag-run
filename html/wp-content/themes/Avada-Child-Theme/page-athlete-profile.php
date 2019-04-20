@@ -81,12 +81,12 @@
 		<div class = 'show-mobile'>
 			<!-- Mobile View Switcher --> 
 			<div id = 'mobile-view-switch'>
-				<a class = "{{$ctrl.currentView == 'challenges' ? 'active':''}}" ng-click="$ctrl.changeView( 'challenges' )" >
-				<span class = 'icon-challenges'></span>Challenges</a>
-				<a class = "{{$ctrl.currentView == 'add_run' ? 'active':''}}" ng-click="$ctrl.changeView( 'add_run' )">
-				<span class = 'fa fa-plus-circle'></span>Add Run</a>
-				<a class = "{{$ctrl.currentView == 'calendar' ? 'active':''}}" ng-click="$ctrl.changeView( 'calendar' )">
-				<span class = 'icon-calendar'></span>Calendar</a>
+				<a class = " h5-light {{$ctrl.currentView == 'challenges' ? 'active':''}}" ng-click="$ctrl.changeView( 'challenges' )" >
+					<span class = 'icon-challenges'></span>Challenges</a>
+				<a class = "h5-light  {{$ctrl.currentView == 'add_run' ? 'active':''}}" ng-click="$ctrl.changeView( 'add_run' )">
+					<span class = 'fa fa-plus-circle'></span>Add Run</a>
+				<a class = "h5-light {{$ctrl.currentView == 'calendar' ? 'active':''}}" ng-click="$ctrl.changeView( 'calendar' )">
+					<span class = 'icon-calendar'></span>Calendar</a>
 			</div>
 		</div>
 		<!-- /  Mobile View Switcher --> 

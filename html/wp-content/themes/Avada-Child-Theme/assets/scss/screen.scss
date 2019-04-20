@@ -175,16 +175,66 @@ $mobile_size: 600px;
         font-size: 63px;
         font-weight: bold;
         line-height: 66px;
+        &-light{
+            font-family: 'Lato';
+            font-size: 22px;
+            font-weight: normal;
+        }
     }
     &-h2{
         font-family: 'Lato';
         font-size: 30px;
         font-weight: bold;
+        &-light{
+            font-family: 'Lato';
+            font-size: 20px;
+            font-weight: normal;
+        }
+    }
+    &-h3{
+        font-family: 'Barlow Condensed';
+        font-size: 22px;
+        font-weight: bold;
+        &-light{
+            font-family: 'Lato';
+            font-size: 20px;
+            font-weight: normal;
+        }
     }
     &-h4{
-        font-family: 'Lato';
-        font-size: 20px;
+        font-family: 'Barlow Condensed';
+        font-size: 22px;
         font-weight: normal;
+        &-light{
+            font-family: 'Lato';
+            font-size: 14px;
+            font-weight: normal;
+        }
+    }
+    &-h5{
+        font-family: 'Barlow Condensed';
+        font-size: 17px;
+        font-weight: normal;
+        &-light{
+            font-family: 'Lato';
+            font-size: 13px;
+            font-weight: normal;
+        }
+        &.with-border{
+            border-bottom:1px solid $gray;
+            padding-bottom:.5rem;
+            margin-bottom:.5rem;
+        }
+    }
+    &-h6{
+        font-family: 'Barlow Condensed';
+        font-size: 15px;
+        font-weight: normal;
+        &-light{
+            font-family: 'Lato';
+            font-size: 11px;
+            font-weight: normal;
+        }
     }
     &-display-1{
         font-size:64px;
@@ -226,10 +276,16 @@ $mobile_size: 600px;
 
 
     }
-    &-modal-body{
+    &-modal-body, .mobile-add-run {
         .mg-input{
             background: $gray-light !important;
         }
+    }
+}
+.mobile-add-run {
+    .mg-input{
+        background: $gray-light !important;
+        font-size:14px !important;
     }
 }
 
@@ -416,7 +472,9 @@ $mobile_size: 600px;
     font-weight:bold;
 }
 
-
+[athlete-calendar]{
+    width:100%;
+}
 
 // Athlete Profile
 .page-template-page-athlete-profile {
@@ -496,8 +554,8 @@ $mobile_size: 600px;
     }
 
     .clickable{
-        border: 1px solid black;
-        border-radius: 100%;
+        // border: 1px solid black;
+        // border-radius: 100%;
         padding: 6px;
         width: 18px;
         height: 18px;
@@ -511,6 +569,24 @@ $mobile_size: 600px;
             background: $yellow;
         }
     }
+    .buttons-bar{
+        span{
+            border-left:1px solid $gray-dark;
+            &:first-of-type{
+                border-left:none ;
+            } 
+        }
+    }
+}
+.btn-circle{
+        border: 1px solid $gray-dark;
+        border-radius: 100%;
+        padding: 6px;
+        width: 32px;
+        height: 32px;
+        text-align: center;
+        font-size: 18px;
+        transition: all .1s ease-out;    
 }
 
 //
@@ -529,40 +605,6 @@ $mobile_size: 600px;
         }
         &:last-child{
             border-right:none !important;
-        }
-    }
-}
-
-
-#mobile-view-switch{
-    width:100%;
-    display: flex;
-    flex-direction: row;
-    background: $gray-dark;
-    position: fixed;
-    z-index: 99;
-    height:70px;
-    bottom:0;
-    a{
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        align-content: center;
-        text-align: center;
-        cursor: pointer;
-        color:$gray-light;
-        width:100%;
-        font-weight: bold;
-        font-size:14px;
-        &:hover{
-            color:$yellow;
-        }
-        &.active{
-            color:$yellow;
-            &:hover{
-                color:$white;
-            }
         }
     }
 }
@@ -605,14 +647,63 @@ $mobile_size: 600px;
     
 }
 
+.fc-unthemed .fc-list-heading td{
+    background:none;
+    font-family: 'Lato';
+    font-size: 13px;
+    font-weight: normal;
+}
+
+.fc-list-heading td.fc-widget-header {
+    background: none;
+}
+
+.fc-list-table .fc-list-heading tr td {
+    border-top-width: 0;
+    padding: 0px;
+    margin-top: .5rem;
+    padding-top: 1rem;
+}
+
+td.fc-widget-header {
+    background: none !important;
+    padding-top: 1rem;
+    padding: none;
+    padding: none;
+    padding: none !important;
+    padding: 1rem 0px 0px 0px !important;
+}
+
+
+
+td.fc-list-item-title.fc-widget-content {
+    padding: 0px;
+}
+
+.fc-listMonth-view{
+    padding:0px 15px;
+}
+
 .fc-next-button, .fc-prev-button {
     background: none !important;
     outline: none !important;
     box-shadow: none !important;
     border: none !important;
+    font-size:18px;
 }
-.fc-header-toolbar h2{
-    font-family: 'Lato';
+.fc-header-toolbar{
+    .fc-center{
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        text-align: center;        
+        h2{
+            font-family: 'Barlow Condensed';
+            font-size: 22px;
+            font-weight: bold;
+
+        }
+    }
 }
 .fc-day.fc-widget-content.has-events{
 	background-color:$green-light;
@@ -754,8 +845,8 @@ body{
     background:$gray-light;
     color:black;
     border-radius: 100%;
-    width:56px;
-    height:56px;
+    width:62px;
+    height:62px;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -764,6 +855,11 @@ body{
 .profile-header{
     display: flex;
     align-items: center;
+}
+.profile-header__settings{
+    .fa, .icon{
+        margin-top:30px;
+    }
 }
 
 
@@ -786,6 +882,9 @@ body{
     border-bottom:1px solid $gray-light;
 
     .challenge-row__header{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
     .challenge-row__label:last-child{
         border-left:1px solid $gray-light;
@@ -795,8 +894,13 @@ body{
             font-size:36px;
         }
     }
+    &:first-of-type{
+        padding-top:0px;
+    }
 }
 .stats-row{
+    display:flex;
+    justify-content: space-between;
     .stats__label{
         min-width:100px;
         .label-title{ font-size:12px; line-height: 12px;}
@@ -805,13 +909,30 @@ body{
             border-left:none;
         }
     }
-}
+    &.stats-row--with-border{
+        &:after{
+            content: '';
+            width:100%;
+            padding-left:15px;
+            padding-right:15px;
+            padding-bottom:1rem;
+            border-bottom:1px solid $gray-light
 
-body.mobile-or-tablet.page-template-page-athlete-profile{
-    #main{
-        padding-top:0px;
+        }
     }
 }
+
+@media only screen and (max-width: $mobile_size) {
+    .page-template-page-athlete-profile{
+        .fusion-footer{
+            display: none !important;
+        }
+        #main{
+            padding-top:0px;
+        }
+    }
+}    
+    
 
 
 
@@ -844,3 +965,42 @@ body.mobile-or-tablet.page-template-page-athlete-profile{
 // body.desktop{
 //     .view-switcher{ display: none;}
 // }
+
+
+#mobile-view-switch{
+    width:100%;
+    display: flex;
+    flex-direction: row;
+    background: $gray-dark;
+    position: fixed;
+    z-index: 99;
+    height:70px;
+    bottom:0;
+
+    [class^="icon-"], .fa{
+        font-size:28px;
+    }
+    a{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+        text-align: center;
+        cursor: pointer;
+        color:$gray-light;
+        width:100%;
+        font-weight: bold;
+        font-size:14px;
+        &:hover{
+            color:$yellow;
+        }
+        &.active{
+            color:$yellow;
+            &:hover{
+                color:$white;
+            }
+        }
+    }
+}
+
