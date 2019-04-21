@@ -21,7 +21,6 @@
 	$userStats = Atw_app::getUserStats();
 	$communityData = Atw_app::get_community_data( true );
 	$goal_options= Atw_app::getGoalOptions();
-
 ?>
 
 

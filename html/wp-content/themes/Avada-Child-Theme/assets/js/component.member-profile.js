@@ -131,6 +131,7 @@
 						$ctrl.temp_goal = goal.goal;
 						$ctrl.eventAfterAllRender();
 					}
+
 					$ctrl.getUserGoal = function(){
 						$goal = false;
 						if(  $ctrl.temp_goal ) $goal =  $ctrl.temp_goal
@@ -147,6 +148,7 @@
 						$ctrl.currentGoal = $goal;
 						return $goal;
 					}
+					
 					$ctrl.change_period = function( o ){
 						$ctrl.runs_total_time = o
 						$timeout();					
@@ -168,6 +170,7 @@
 						if( $view == 'you' ){
 							$timeout( function(){
 								var swiper = new Swiper('.swiper-container', {
+									initialSlide : jQuery('.week-swiper .swiper-slide').length,
 									pagination: {
 										el: '.swiper-pagination',
 										type: 'progressbar',

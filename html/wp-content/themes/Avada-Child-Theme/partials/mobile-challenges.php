@@ -68,6 +68,46 @@
             </span>
         </div>
 
+        
+        <div class="swiper-container week-swiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">Slide 2</div>
+                <div class="swiper-slide">Slide 3</div>
+                <div class="swiper-slide">Slide 4</div>
+                <div class="swiper-slide">Slide 5</div>
+                <div class="swiper-slide">Slide 6</div>
+                <div class="swiper-slide">Slide 7</div>
+                <div class="swiper-slide">Slide 8</div>
+                <div class="swiper-slide">Slide 9</div>
+                <div class="swiper-slide">Slide 10</div>
+
+                <div class="swiper-slide">
+                    <h4 class = "mg-h5 with-border" >THIS WEEK</h4>
+                    <h3 class = 'mg-h1-light' >March 10-16, 2019</h3>
+                    <hr/>
+                    <div class ='stats-row d-flex justify-content-space-between'>
+                        <div class = 'stats__label mr-1'>
+                            <div class = 'label-title'>Miles This Week</div>
+                            <div class = 'label-value'>{{ $ctrl.MRS.userStats.this_week.mi_total }} miles</div>
+                        </div>
+                        <div class = 'stats__label pl-1'>
+                            <div class = 'label-title'> Longest Run</div>
+                            <div class = 'label-value'> {{$ctrl.MRS.userStats.this_week.longest_run}} mi</div>
+                        </div>
+                        <div class = 'stats__label pl-1'>
+                            <div class = 'label-title'> Fastest Pace</div>
+                            <div class = 'label-value'> {{$ctrl.MRS.userStats.this_week.fastest_pace == 0 ? 'n/a' : $ctrl.MRS.userStats.this_week.fastest_pace | number : 2 | convertMinutes }} /mi</div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>  
+
+
         <div class = 'challenge-streak'>
             <h4 class = "mg-h5 with-border" >CHALLENGE STREAK</h4>
             <div class ='stats-row d-flex'>
@@ -85,7 +125,7 @@
         <div class = 'challenge-streak'>
             <h4 class = "mg-h5 with-border"  >STATS</h4>
             <h3 class = 'mg-h1-light' >Year-To-Date</h3>
-            <div class ='stats-row d-flex  mb-2 '>
+            <div class ='stats-row d-flex  mb-2 justify-content-space-between  '>
                 <div class = 'stats__label mr-1 '>
                     <div class = 'label-title'>Total Runs</div>
                     <div class = 'label-value'>{{ $ctrl.MRS.userStats.this_year.runs_total }}</div>
@@ -107,24 +147,7 @@
             </div>
         </div>
 
-        <!-- <div class="swiper-container">
-            <div class="swiper-wrapper">
-            <div class="swiper-slide">Slide 1</div>
-            <div class="swiper-slide">Slide 2</div>
-            <div class="swiper-slide">Slide 3</div>
-            <div class="swiper-slide">Slide 4</div>
-            <div class="swiper-slide">Slide 5</div>
-            <div class="swiper-slide">Slide 6</div>
-            <div class="swiper-slide">Slide 7</div>
-            <div class="swiper-slide">Slide 8</div>
-            <div class="swiper-slide">Slide 9</div>
-            <div class="swiper-slide">Slide 10</div>
-            </div>
-            <div class="swiper-pagination"></div>
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
-        </div>  
--->
+
     </div> 
 
 
