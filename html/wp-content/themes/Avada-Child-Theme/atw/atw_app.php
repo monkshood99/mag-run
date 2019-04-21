@@ -20,6 +20,7 @@ class Atw_app{
 		if( trying_to( 'mag::edit-my-run' , 'request' )) static::edit_my_run();
 		if( trying_to( 'mag::delete-my-run' , 'request' )) static::delete_my_run();
 		if( trying_to( 'mag::get-my-runs' , 'request' )) static::get_my_runs();
+		if( trying_to( 'mag::get-community-data' , 'request' )) static::get_community_data();
 		if( trying_to( 'mag::get-log-runs' , 'request' )) static::get_my_log();
 		if( trying_to( 'mag::get-total-runs' , 'request' )) static::get_total_runs(false);
 		if( trying_to( 'mag::get-total-distance' , 'request' )) static::get_totals(false, return_if( $_REQUEST, 'unit'));
@@ -28,6 +29,7 @@ class Atw_app{
 
 	}
 
+	
 	public static function setTZ(){
 		$success = false;
 		if( $data = mx_POST() ) {
@@ -82,6 +84,22 @@ class Atw_app{
 		add_shortcode( 'total-runs', ['Atw_app', 'get_total_runs_shortcode']  );
 		add_shortcode( 'mag-totals', ['Atw_app', 'get_totals_shortcode']  );
 
+	}
+
+	public static function get_community_data( $internal = false ){
+		global $wpdb;
+		$default_totals = ( object) [ 'members'=> 0, 'mi_total'=> 0 , 'runs_total' => 0   ];
+		$totals 	= pods( 'run')->find( [ 
+			'select'=> 'COUNT(`t`.`id`) as `runs_total` ,SUM(miles) as `mi_total` ' , 
+			]  )->data();	
+		if( $totals = return_if( $totals, 0 )){
+			$default_totals->mi_total = $totals->mi_total;
+			$default_totals->runs_total = $totals->runs_total;
+		}
+		$default_totals->members = count_users()['total_users'];
+		$totals = $default_totals;
+		if( $internal ) return  compact( 'totals' ) ;
+		return_json( compact( 'totals' ) );
 	}
 
 

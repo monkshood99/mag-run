@@ -19,6 +19,7 @@
 	$current_user = wp_get_current_user();
 	$user_meta = normalize_post_meta( get_user_meta($current_user->ID) ) ;
 	$userStats = Atw_app::getUserStats();
+	$communityData = Atw_app::get_community_data( true );
 	$goal_options= Atw_app::getGoalOptions();
 
 ?>
@@ -38,7 +39,10 @@
 </div> 
 
 
-<div  athlete-calendar target="#calendar" user-stats='<?= json_encode_attr( $userStats);?>' goal-options='<?= json_encode_attr($goal_options);?>' >
+<div  athlete-calendar target="#calendar" 
+	user-stats='<?= json_encode_attr( $userStats);?>' 
+	goal-options='<?= json_encode_attr($goal_options);?>' 
+	community-data='<?= json_encode_attr( $communityData);?>' >
 
 	<!-- App Container  --> 		
 	<div class = "app-container  bootstrap-wrapper full-width {{$ctrl.ready ? 'ready' : ''}}"  ng-cloak>

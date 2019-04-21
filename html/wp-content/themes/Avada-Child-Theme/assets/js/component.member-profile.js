@@ -7,7 +7,7 @@
 		eba.directive( 'athleteCalendar', [ '$http', '$timeout', '$rootScope', '$injector', '$q', 'MagRunService', '$timeout',
 		function( $http , $timeout, $rootScope, $injector , $q, MRS , $timeout ){ 
 			return {
-				"scope" : { userId : "=" ,  userStats : "=" , goalOptions : "=" },
+				"scope" : { userId : "=" ,  userStats : "=" , goalOptions : "="  , communityData : "="},
 				'template' : function(){},
 				'link' : function($scope, $element, $attrs ){},
 				'controller' : function( $scope, $element , $attrs ){ 
@@ -17,6 +17,7 @@
 					$ctrl.deleting = false;
 					$ctrl.confirmingDelete = false;
 					$ctrl.goalOptions = $scope.goalOptions;
+					$ctrl.communityData = $scope.communityData;
 					$ctrl.goalLabel = 'Runs This Week';
 					$ctrl.currentGoal = false;
 					$ctrl.temp_goal = false
@@ -24,6 +25,7 @@
 					$ctrl.currentCalView = 'month';
 					$ctrl.currentChallengeView = 'community';
 					$ctrl.currentView = 'add_run';
+					console.log( $ctrl.communityData )
 
 					$ctrl.$onInit = function(){
 						$timeout( function(){ 
@@ -59,11 +61,18 @@
 
 					}
 					$ctrl.getCommunityData = function(){
-						var data = {
-							distance : 9600,
-							members : 2400,
-							runs : 4800
-						}
+						$ctrl.communityData.totals.mi_total = parseInt( $ctrl.communityData.totals.mi_total );
+						$ctrl.communityData.totals.runs_total = parseInt( $ctrl.communityData.totals.runs_total );
+						$ctrl.communityData.totals.members = parseInt( $ctrl.communityData.totals.members );
+						console.log(  $ctrl.communityData.totals )
+						$http.post( '/?mag::get-community-data'  )
+						.then( 
+							function( response ){ 
+								console.log( response )
+							}, 
+							function( response ){  $q.reject( 'Failed to fetch events', response ); }
+						);
+						
 						var challenges = [
 							{
 								"id" : "run-across-america",
@@ -89,11 +98,10 @@
 						];
 
 						challenges.forEach( function( challenge ){
-							challenge.progress = data.distance,
-							challenge.progressPercent = ( data.distance / challenge.goal ) * 100  
+							challenge.progress = $ctrl.communityData.totals.mi_total,
+							challenge.progressPercent = ( $ctrl.communityData.totals.mi_total / challenge.goal ) * 100  
 						});
 						$ctrl.communityChallenges = challenges;
-						$ctrl.communityData = data;
 						return $ctrl.communityChallenges;
 					}
 					$ctrl.getLogRuns = function(){
@@ -468,6 +476,8 @@
 						});
 
 					}
+
+
 					
 					/**
 					 * function to get the events 

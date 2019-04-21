@@ -36,16 +36,16 @@
             <div class ='stats-row d-flex justify-content-space-between'>
                 <div class = 'stats__label mr-1'>
                     <div class = 'label-title'> Miles</div>
-                    <div class = 'label-value'> {{$ctrl.communityData.distance | number}} mi</div>
+                    <div class = 'label-value'> {{$ctrl.communityData.totals.mi_total | number}} mi</div>
                 </div>
 
                 <div class = 'stats__label pl-1'>
                     <div class = 'label-title'> Total Runs</div>
-                    <div class = 'label-value'> {{$ctrl.communityData.runs | number}}</div>
+                    <div class = 'label-value'> {{$ctrl.communityData.totals.runs_total | number}}</div>
                 </div>
                 <div class = 'stats__label pl-1 mr-1'>
                     <div class = 'label-title'> Members</div>
-                    <div class = 'label-value'> {{$ctrl.communityData.members | number}} mi</div>
+                    <div class = 'label-value'> {{$ctrl.communityData.totals.members | number}} mi</div>
                 </div>
             </div>
 
