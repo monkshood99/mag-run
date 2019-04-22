@@ -152,13 +152,14 @@ class Atw_app{
 		//date_default_timezone_set ( 'America/Denver' ); 
 		$default_totals = ( object) [ 'runs_total'=> 0, 'km_total' => 0, 'mi_total'=> 0 , 'longest_run'=> 0, 'fastest_pace' => 0  ];
 
-		// get all runs
+		// get all run totals
 		$where=" `user`.`id` = '{$user_id}' OR `user_id` = '{$user_id}' ";
 		$runs 	= pods( 'run')->find( [ 'select'=> 'COUNT(`t`.`id`) as `runs_total` ,FORMAT(SUM(kilometers),1) as `km_total` , FORMAT(SUM(miles),1) as `mi_total`' , 'where'=>  $where , 'limit'=> '-1' ]  )->data();
 		$data = return_if( $runs, 0 , $default_totals );
 		$data->km_total = is_numeric( $data->km_total ) ? $data->km_total : 0  ;
 		$data->mi_total = is_numeric( $data->mi_total ) ? $data->mi_total : 0   ;
 
+		
 
 		// get runs of this week
 		$day = date('w');
@@ -185,6 +186,43 @@ class Atw_app{
 		$this_week->longest_run = return_if( $longest_run, 0 ) ?  $longest_run[0]->miles : 0;
 		$this_week->fastest_pace = return_if( $fastest_pace, 0 ) ?  $fastest_pace[0]->pace_mi : 0;
 
+		// get week data 
+		$select = "CONCAT(YEAR(run_date), '/', WEEK(run_date)) AS week_name,
+			GROUP_CONCAT( miles ) as all_miles,
+			GROUP_CONCAT( pace_mi ) as all_paces,
+			YEAR(run_date) as year,
+			WEEK(run_date) as week,
+			run_date,
+			COUNT(`t`.`id`) as `runs_total`,
+			FORMAT(SUM(kilometers),1) as `km_total`,
+			SUM(miles) as `mi_total`";
+		$where=" `user`.`id` = '{$user_id}' OR `user_id` = '{$user_id}' ";
+		$weeks 	= pods( 'run')->find( [ 
+			'select'=> $select , 
+			'where'=>  $where , 
+			'groupby'=>  'week_name', 
+			'orderby'=> "YEAR(run_date) ASC, WEEK(run_date) ASC",
+			'limit'=> '-1' ,
+		] )->data();
+
+		if( !empty( $weeks )){
+			foreach( $weeks as $week ){
+				$all_miles = explode( ',' , $week->all_miles );
+				if( !empty( $all_miles)){
+					rsort( $all_miles );
+					$week->longest_run = $all_miles[0];
+					unset( $week->all_miles);
+				}
+				$all_paces = explode( ',' , $week->all_paces );
+				if( !empty( $all_paces)){
+					sort( $all_paces );
+					$week->fastest_pace = $all_paces[0];
+					unset( $week->all_paces);
+				}
+				$data->weeks[$week->week_name]= $week;
+			}
+		}
+		
 
 		// get runs of this year
 		$start = date('Y-m-d', strtotime('1/01'));

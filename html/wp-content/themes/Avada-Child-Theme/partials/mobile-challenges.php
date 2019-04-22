@@ -1,4 +1,4 @@
-<div class = 'container mb-4' ng-show="$ctrl.currentView == 'challenges'">
+<div class = 'container-fluid mb-4' ng-show="$ctrl.currentView == 'challenges'">
 
 
 	<div class = 'view-switcher mb-1'>
@@ -68,44 +68,58 @@
             </span>
         </div>
 
-        
-        <div class="swiper-container week-swiper">
-            <div class="swiper-wrapper">
-                <div class="swiper-slide">Slide 2</div>
-                <div class="swiper-slide">Slide 3</div>
-                <div class="swiper-slide">Slide 4</div>
-                <div class="swiper-slide">Slide 5</div>
-                <div class="swiper-slide">Slide 6</div>
-                <div class="swiper-slide">Slide 7</div>
-                <div class="swiper-slide">Slide 8</div>
-                <div class="swiper-slide">Slide 9</div>
-                <div class="swiper-slide">Slide 10</div>
+        <div class = 'row bkg-gray-light'>
+            <div class = 'col pb-1'>
+                <div class="swiper-container week-swiper">
+                    <div class="swiper-wrapper">
 
-                <div class="swiper-slide">
-                    <h4 class = "mg-h5 with-border" >THIS WEEK</h4>
-                    <h3 class = 'mg-h1-light' >March 10-16, 2019</h3>
-                    <hr/>
-                    <div class ='stats-row d-flex justify-content-space-between'>
-                        <div class = 'stats__label mr-1'>
-                            <div class = 'label-title'>Miles This Week</div>
-                            <div class = 'label-value'>{{ $ctrl.MRS.userStats.this_week.mi_total }} miles</div>
+                        <div class="swiper-slide" ng-repeat="week in $ctrl.challengeWeeks">
+                            <h4 class = "mg-h5 with-border" >WEEK OF</h4>
+                            <h3 class = 'mg-h1-light' >{{week.sunday}} -{{week.saturday}}, {{week.year}}</h3>
+                            <hr/>
+                            <div class ='stats-row d-flex justify-content-space-between'>
+                                <div class = 'stats__label mr-1'>
+                                    <div class = 'label-title'>Miles This Week</div>
+                                    <div class = 'label-value'>{{ week.run_data.mi_total | number:2 }} miles</div>
+                                </div>
+                                <div class = 'stats__label pl-1'>
+                                    <div class = 'label-title'> Longest Run</div>
+                                    <div class = 'label-value'> {{week.run_data.longest_run | number:2 }} mi</div>
+                                </div>
+                                <div class = 'stats__label pl-1'>
+                                    <div class = 'label-title'> Fastest Pace</div>
+                                    <div class = 'label-value'> {{week.run_data.fastest_pace == 0 ? 'n/a' : week.run_data.fastest_pace | number : 2 | convertMinutes }} /mi</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class = 'stats__label pl-1'>
-                            <div class = 'label-title'> Longest Run</div>
-                            <div class = 'label-value'> {{$ctrl.MRS.userStats.this_week.longest_run}} mi</div>
+
+                        <div class="swiper-slide">
+                            <h4 class = "mg-h5 with-border" >THIS WEEK</h4>
+                            <h3 class = 'mg-h1-light' >{{$ctrl.currentWeekTitle}}</h3>
+                            <hr/>
+                            <div class ='stats-row d-flex justify-content-space-between'>
+                                <div class = 'stats__label mr-1'>
+                                    <div class = 'label-title'>Miles This Week</div>
+                                    <div class = 'label-value'>{{ $ctrl.MRS.userStats.this_week.mi_total }} miles</div>
+                                </div>
+                                <div class = 'stats__label pl-1'>
+                                    <div class = 'label-title'> Longest Run</div>
+                                    <div class = 'label-value'> {{$ctrl.MRS.userStats.this_week.longest_run}} mi</div>
+                                </div>
+                                <div class = 'stats__label pl-1'>
+                                    <div class = 'label-title'> Fastest Pace</div>
+                                    <div class = 'label-value'> {{$ctrl.MRS.userStats.this_week.fastest_pace == 0 ? 'n/a' : $ctrl.MRS.userStats.this_week.fastest_pace | number : 2 | convertMinutes }} /mi</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class = 'stats__label pl-1'>
-                            <div class = 'label-title'> Fastest Pace</div>
-                            <div class = 'label-value'> {{$ctrl.MRS.userStats.this_week.fastest_pace == 0 ? 'n/a' : $ctrl.MRS.userStats.this_week.fastest_pace | number : 2 | convertMinutes }} /mi</div>
-                        </div>
+
+
                     </div>
-                </div>
-
-
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                </div>  
             </div>
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
-        </div>  
+        </div>
 
 
         <div class = 'challenge-streak'>

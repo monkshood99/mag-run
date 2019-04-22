@@ -25,7 +25,8 @@
 					$ctrl.currentCalView = 'month';
 					$ctrl.currentChallengeView = 'community';
 					$ctrl.currentView = 'add_run';
-					console.log( $ctrl.communityData )
+
+
 
 					$ctrl.$onInit = function(){
 						$timeout( function(){ 
@@ -58,20 +59,57 @@
 						$ctrl.getUserGoal();
 
 						$ctrl.getCommunityData();
-
+						$ctrl.getWeeks();
 					}
+
+					$ctrl.getWeeks = function(){
+						var currentWeek = moment().format( 'w');
+						var $sunday = moment().day("Sunday").week(currentWeek ).format( 'MMM D');
+						var $saturday = moment().day("Saturday").week(currentWeek ).format( 'D')
+						var $year = moment().week( currentWeek ).format( 'YYYY');
+						$ctrl.currentWeekTitle = $sunday + ' - ' + $saturday + ', ' + $year;
+						$ctrl.challengeWeeks = [];
+						var $week = 0;
+						while( $week < ( currentWeek - 1) ){
+							var sunday = moment().day("Sunday").week($week ).format( 'MMM D');
+							var saturday = moment().day("Saturday").week($week ).format( 'D')
+							var $year = moment().week( $week ).format( 'YYYY');
+							var $week_name = $year+'/' + $week;
+							var $week_data = { 
+								'week_name' : $week_name,
+								'sunday' : sunday,
+								'saturday' : saturday,
+								'year' : $year
+							};
+							if( typeof( $ctrl.MRS.userStats.weeks[ $week_name ]) !== 'undefined' ){
+								$week_data.run_data = $ctrl.MRS.userStats.weeks[ $week_name ];
+							}else{
+								$week.run_data = {
+									'mi_total' : 0,
+									'longest_run' : 0,
+									'fastest_pace' : 0
+								};
+
+							}
+							$ctrl.challengeWeeks.push( $week_data );
+							$week++;
+						}
+
+						
+					}
+
 					$ctrl.getCommunityData = function(){
 						$ctrl.communityData.totals.mi_total = parseInt( $ctrl.communityData.totals.mi_total );
 						$ctrl.communityData.totals.runs_total = parseInt( $ctrl.communityData.totals.runs_total );
 						$ctrl.communityData.totals.members = parseInt( $ctrl.communityData.totals.members );
-						console.log(  $ctrl.communityData.totals )
-						$http.post( '/?mag::get-community-data'  )
-						.then( 
-							function( response ){ 
-								console.log( response )
-							}, 
-							function( response ){  $q.reject( 'Failed to fetch events', response ); }
-						);
+
+						// $http.post( '/?mag::get-community-data'  )
+						// .then( 
+						// 	function( response ){ 
+						// 		console.log( response )
+						// 	}, 
+						// 	function( response ){  $q.reject( 'Failed to fetch events', response ); }
+						// );
 						
 						var challenges = [
 							{
