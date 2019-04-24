@@ -69,13 +69,33 @@
         </div>
 
         <div class = 'row bkg-gray-light'>
-            <div class = 'col pb-1'>
+            <div class = 'col py-1'>
                 <div class="swiper-container week-swiper">
                     <div class="swiper-wrapper">
 
                         <div class="swiper-slide" ng-repeat="week in $ctrl.challengeWeeks">
-                            <h4 class = "mg-h5 with-border" >WEEK OF</h4>
+                            <h4 class = "mg-h5 " >WEEK OF</h4>
                             <h3 class = 'mg-h1-light' >{{week.sunday}} -{{week.saturday}}, {{week.year}}</h3>
+                            <hr/>
+                            <div class = 'goal-circles ' ng-if="$ctrl.currentGoal.type == 'week'" >
+                                <div class ='stats-row d-flex justify-content-space-between mb-1'>
+                                    <div class = 'stats__label mr-1'>
+                                        <div class = 'label-title'>Progress</div>
+                                    </div>
+                                 </div>
+                                <div class = 'd-flex '>
+                                    <div ng-repeat="i in $ctrl.currentGoal.value | goalToArray" class = "goal-circle {{week.run_data.runs_total >= i  ? 'active' : 'inactive' }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div ng-if="$ctrl.currentGoal.type == 'miles'">
+                                <div class ='stats-row d-flex justify-content-space-between'>
+                                    <div class = 'stats__label mr-1'>
+                                    <div class = 'label-title'>Progress </div>
+                                        <div class = 'label-value'>{{ week.run_data.mi_total  | number:2 }} / {{( $ctrl.currentGoal.value /  52 ) | number:2}} mi</div>
+                                    </div>
+                                 </div>
+                            </div>
                             <hr/>
                             <div class ='stats-row d-flex justify-content-space-between'>
                                 <div class = 'stats__label mr-1'>
@@ -94,8 +114,28 @@
                         </div>
 
                         <div class="swiper-slide">
-                            <h4 class = "mg-h5 with-border" >THIS WEEK</h4>
+                            <h4 class = "mg-h5 " >THIS WEEK</h4>
                             <h3 class = 'mg-h1-light' >{{$ctrl.currentWeekTitle}}</h3>
+                            <hr/>
+                            <div class = 'goal-circles ' ng-if="$ctrl.currentGoal.type == 'week'" >
+                                <div class ='stats-row d-flex justify-content-space-between mb-1'>
+                                    <div class = 'stats__label mr-1'>
+                                        <div class = 'label-title'>Progress</div>
+                                    </div>
+                                 </div>
+                                <div class = 'd-flex '>
+                                    <div ng-repeat="i in $ctrl.currentGoal.value | goalToArray" class = "goal-circle {{$ctrl.MRS.userStats.this_week.runs_total >= i  ? 'active' : 'inactive' }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div ng-if="$ctrl.currentGoal.type == 'miles'">
+                                <div class ='stats-row d-flex justify-content-space-between'>
+                                    <div class = 'stats__label mr-1'>
+                                    <div class = 'label-title'>Progress </div>
+                                        <div class = 'label-value'>{{ $ctrl.MRS.userStats.this_week.mi_total  | number:2 }} / {{( $ctrl.currentGoal.value /  52 ) | number:2}} mi</div>
+                                    </div>
+                                 </div>
+                            </div>
                             <hr/>
                             <div class ='stats-row d-flex justify-content-space-between'>
                                 <div class = 'stats__label mr-1'>

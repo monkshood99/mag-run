@@ -190,6 +190,7 @@ class Atw_app{
 		$select = "CONCAT(YEAR(run_date), '/', WEEK(run_date)) AS week_name,
 			GROUP_CONCAT( miles ) as all_miles,
 			GROUP_CONCAT( pace_mi ) as all_paces,
+			GROUP_CONCAT( run_date ) as all_dates,
 			YEAR(run_date) as year,
 			WEEK(run_date) as week,
 			run_date,

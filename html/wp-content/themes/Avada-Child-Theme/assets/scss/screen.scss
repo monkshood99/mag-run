@@ -982,6 +982,21 @@ body{
     }
 }
 
+.goal-circles{
+
+}
+.goal-circle{
+    width:24px;
+    height:24px;
+    background:$white;
+    border:1px solid $gray;
+    border-radius: 100%;
+    margin-right:4px;
+    &.active{
+        background:$yellow;
+    }
+}
+
 #mobile-view-switch{
     width:100%;
     display: flex;

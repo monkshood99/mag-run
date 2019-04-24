@@ -67,9 +67,11 @@
 						var $sunday = moment().day("Sunday").week(currentWeek ).format( 'MMM D');
 						var $saturday = moment().day("Saturday").week(currentWeek ).format( 'D')
 						var $year = moment().week( currentWeek ).format( 'YYYY');
+
 						$ctrl.currentWeekTitle = $sunday + ' - ' + $saturday + ', ' + $year;
 						$ctrl.challengeWeeks = [];
 						var $week = 0;
+
 						while( $week < ( currentWeek - 1) ){
 							var sunday = moment().day("Sunday").week($week ).format( 'MMM D');
 							var saturday = moment().day("Saturday").week($week ).format( 'D')
@@ -177,10 +179,12 @@
 
 						if( $goal.type == 'week' ){
 							$ctrl.goalLabel = 'Runs This Week';
+							$ctrl.goalLabelLong = 'Run ' + $goal.value + ' Days This Week';
 							$ctrl.goalValueType = 'runs_total';
 						}
 						if( $goal.type == 'miles' ){
 							$ctrl.goalLabel = 'Miles This Week';
+							$ctrl.goalLabelLong = 'Run ' +  ($goal.value  / 52).toFixed(2) + ' Miles This Week';
 							$ctrl.goalValueType = 'mi_total';
 						}
 						$ctrl.currentGoal = $goal;
@@ -713,6 +717,12 @@
 		// 	}
 		// }]);
 		
+
+	eba.filter( 'goalToArray', [ function(){
+		return function( input ){
+			return [1,2,3,4,5];
+		}
+	}]);
 
 	eba.directive('mgDuration', ['$timeout' , function( $timeout ){
 		return {
