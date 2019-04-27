@@ -64,7 +64,7 @@
 
 					$ctrl.getWeeks = function(){
 						var currentWeek = moment().format( 'w');
-						var $sunday = moment().day("Sunday").week(currentWeek ).format( 'MMM D');
+						var $sunday = moment().day("Monday").week(currentWeek ).subtract( 1, 'd').format( 'MMM D');
 						var $saturday = moment().day("Saturday").week(currentWeek ).format( 'D')
 						var $year = moment().week( currentWeek ).format( 'YYYY');
 
@@ -73,7 +73,7 @@
 						var $week = 0;
 
 						while( $week < ( currentWeek - 1) ){
-							var sunday = moment().day("Sunday").week($week ).format( 'MMM D');
+							var sunday = moment().day("Monday").week(week ).subtract( 1, 'd').format( 'MMM D');
 							var saturday = moment().day("Saturday").week($week ).format( 'D')
 							var $year = moment().week( $week ).format( 'YYYY');
 							var $week_name = $year+'/' + $week;

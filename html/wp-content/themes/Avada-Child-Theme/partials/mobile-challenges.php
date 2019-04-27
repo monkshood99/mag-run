@@ -162,7 +162,7 @@
         </div>
 
 
-        <div class = 'challenge-streak'>
+        <!-- <div class = 'challenge-streak'>
             <h4 class = "mg-h5 with-border" >CHALLENGE STREAK</h4>
             <div class ='stats-row d-flex'>
                 <div class = 'stats__label mr-1'>
@@ -174,12 +174,12 @@
                     <div class = 'label-value'> 8 Weeks</div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div class = 'challenge-streak'>
             <h4 class = "mg-h5 with-border"  >STATS</h4>
             <h3 class = 'mg-h1-light' >Year-To-Date</h3>
-            <div class ='stats-row d-flex  mb-2 justify-content-space-between  '>
+            <div class ='stats-row d-flex  mb-2   '>
                 <div class = 'stats__label mr-1 '>
                     <div class = 'label-title'>Total Runs</div>
                     <div class = 'label-value'>{{ $ctrl.MRS.userStats.this_year.runs_total }}</div>
