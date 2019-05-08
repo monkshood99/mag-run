@@ -9,10 +9,12 @@
 	wp_enqueue_script( 'swiper-script',  TMPL_PATH . '/bower_components/swiper/dist/js/swiper.min.js' , null , null  );
 	wp_enqueue_style( 'swiper-style', TMPL_PATH . '/bower_components/swiper/dist/css/swiper.min.css');
 
+	wp_enqueue_script( 'ng-file-upload-shim',  TMPL_PATH .'/bower_components/ng-file-upload/ng-file-upload-shim.min.js' , null , null, true  );
+	wp_enqueue_script( 'ng-file-upload',  TMPL_PATH .'/bower_components/ng-file-upload/ng-file-upload.min.js' , null , null, true  );
 	wp_enqueue_script( 'ng-run-tracker',  TMPL_PATH .'/assets/js/component.member-profile.js' , null , '24', true  );
+	wp_enqueue_script( 'mg-avatar-upload',  TMPL_PATH .'/assets/js/component.avatar-upload.js' , null , null, true  );
 	wp_enqueue_style( 'boostrap-grid' , TMPL_PATH . "/bower_components/bootstrap4-grid-only/dist/css/bootstrap-grid.min.css" );
 
-	
 // 	wp_enqueue_script( 'vue',  TMPL_PATH . '/bower_components/vue/dist/vue.min.js' , null , null, true  );
 // 	wp_enqueue_script( 'member-page',  TMPL_PATH .'/assets/js/vue.member-profile.js' , null , null, true  );
 
@@ -21,6 +23,7 @@
 	$userStats = Atw_app::getUserStats();
 	$communityData = Atw_app::get_community_data( true );
 	$goal_options= Atw_app::getGoalOptions();
+	$user_avatar = Atw_app::getUserAvatar( $user_meta );
 ?>
 
 

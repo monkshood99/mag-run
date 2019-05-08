@@ -857,6 +857,9 @@ body{
     flex-direction: column;
     justify-content: center;
 }
+.user-avatar{
+    background-size:contain;border-radius:100%;width:60px;height:72px;
+}
 .profile-header{
     display: flex;
     align-items: center;

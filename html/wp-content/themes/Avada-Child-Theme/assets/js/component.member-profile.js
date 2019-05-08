@@ -2,6 +2,7 @@
 ( function(){
 		
 		var eba = angular.module( 'WebsiteApp' );
+		eba.requires.push( 'ngFileUpload' );
 		
 		
 		eba.directive( 'athleteCalendar', [ '$http', '$timeout', '$rootScope', '$injector', '$q', 'MagRunService', '$timeout',
@@ -553,6 +554,36 @@
 						);
 						
 					}
+
+					/**
+					 * update the avatar image
+					 */
+					$ctrl.updateAvatar = function(){
+						Upload.upload({ url: "/?mg-upload-avatar", data : $ctrl.data 
+						}).then(function ( response ) {
+							/// check the success response 
+							console.log( ressponse );
+							$ctrl.contact_form_response = response.data;
+							if(response.data.contact.success ){
+								$ctrl.submitting = false
+							}else{
+								$ctrl.submitting = 'error';
+								$timeout(function(){
+										$ctrl.submitting = false
+								}, 1500)
+							}
+						}, function ( response ) {
+							// there was a server error in uploading
+							$ctrl.submitting = 'error';
+							$timeout(function(){
+									$ctrl.submitting = false
+							}, 1500)
+						}, function (evt) {
+							// track the progress
+							$ctrl.uploadProgress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+						});
+	
+					}					
 
 				}
 			}

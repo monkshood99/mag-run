@@ -26,6 +26,7 @@ class Atw_app{
 		if( trying_to( 'mag::get-total-distance' , 'request' )) static::get_totals(false, return_if( $_REQUEST, 'unit'));
 		if( trying_to( 'mag::post-to-facebook' , 'request' )) static::post_to_facebook();		
 		if( trying_to( 'mg::setTZ' , 'request' )) static::setTZ();
+		if( trying_to( 'mg::update-avatar' , 'request' )) static::updateAvatar();
 
 	}
 
@@ -378,6 +379,45 @@ class Atw_app{
 			}
 		}
 		return_json ( compact(  'success' ,  'userStats'));
+	}
+	public static function getUserAvatar($meta ){
+		$avatar = false;
+		if( $id = return_if( $meta, 'user_avatar')) {
+			$avatar = wp_get_attachment_thumb_url($id);
+		}
+		return $avatar;
+	}
+	
+	public static function updateAvatar(){
+		global $wpdb;
+		$data = mx_POST();
+		$user = wp_get_current_user(  );
+		$user_id = return_if( $data, 'user_id' );
+		$errors = false;
+		$success = false;
+		if( !$user_id || $data->user_id  != $user->ID ){
+			$errors = 'Invalid User';
+		}
+		if( !$errors && isset( $_FILES)){
+			$avatar = return_if( $_FILES, 'avatar');
+			if($avatar ){
+				if ( ! function_exists( 'media_handle_upload' ) ) {
+					require_once( ABSPATH . 'wp-admin/includes/image.php' );
+					require_once( ABSPATH . 'wp-admin/includes/file.php' );
+					require_once( ABSPATH . 'wp-admin/includes/media.php' );
+				}
+				if( $avatar ){
+					$avatar_id = media_handle_upload('avatar', $user_id );
+					if(is_wp_error($avatar_id)) $errors= 'Failed to upload Avatar';
+					else $data->avatar = $avatar_id;
+					update_user_meta($user_id, 'user_avatar', $avatar_id);
+					$success = true;
+					$avatar = wp_get_attachment_thumb_url($id);
+				}
+			}
+		}
+		return_json( compact( 'success', 'data' , 'user_id', 'avatar' , 'avatar_id'));
+
 	}
 
 	public static function getGoalOptions(){
