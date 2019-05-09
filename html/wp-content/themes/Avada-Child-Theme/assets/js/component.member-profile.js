@@ -5,15 +5,16 @@
 		eba.requires.push( 'ngFileUpload' );
 		
 		
-		eba.directive( 'athleteCalendar', [ '$http', '$timeout', '$rootScope', '$injector', '$q', 'MagRunService', '$timeout',
-		function( $http , $timeout, $rootScope, $injector , $q, MRS , $timeout ){ 
+		eba.directive( 'athleteCalendar', [ '$http', '$timeout', '$q', 'MagRunService', '$timeout',
+		function( $http , $timeout,  $q, MRS , $timeout ){ 
 			return {
-				"scope" : { userId : "=" ,  userStats : "=" , goalOptions : "="  , communityData : "="},
+				"scope" : { userId : "=" ,  userMeta : "=",  userStats : "=" , goalOptions : "="  , communityData : "="},
 				'template' : function(){},
 				'link' : function($scope, $element, $attrs ){},
 				'controller' : function( $scope, $element , $attrs ){ 
 					var $ctrl = $scope.$ctrl  = this
 					$ctrl.MRS = MRS;
+					$ctrl.MRS.userMeta = $scope.userMeta;
 					$ctrl.log_runs = [];
 					$ctrl.deleting = false;
 					$ctrl.confirmingDelete = false;
@@ -26,6 +27,7 @@
 					$ctrl.currentCalView = 'month';
 					$ctrl.currentChallengeView = 'community';
 					$ctrl.currentView = 'add_run';
+
 
 
 

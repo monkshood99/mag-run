@@ -258,7 +258,10 @@ $mobile_size: 600px;
 		    border-radius: 30px;
 		    font-size: 2rem;
 		    padding:10px 60px;
-	    }
+        }
+        &.btn-yellow{
+            background:$yellow;
+        }
     }
     &-default{
         font-family: Roboto, Arial, Helvetica, sans-serif;        

@@ -10,7 +10,8 @@
 	// 	This is a new version ( mxForm ) is going to be deprecated
 	//  This isolates the scope
 	// -------------------------------------------------------
-	eba.directive('mgAvatarUpload', ['$parse', '$http', 'Upload',   '$injector' , function($parse, $http, Upload, $injector){
+	eba.directive('mgAvatarUpload', ['$parse', '$http', 'Upload',   '$injector' , 'MagRunService',
+		function($parse, $http, Upload, $injector , MRS){
 		return {
 			scope : { "userId" : "=" },
 			link : function( $scope, $element, $attrs , ngModel ){ }, // link
@@ -18,6 +19,7 @@
 			controller : function($scope, $http, $timeout, $attrs ){
 
 				var $ctrl = $scope.$ctrl = this;
+				$ctrl.MRS = MRS;
 				$ctrl.data = {  
 					'user_id' : $scope.userId
 				};
@@ -26,11 +28,17 @@
 
 
 				$ctrl.submit = function(){
+					$ctrl.submitting = true;
 					Upload.upload({ url: "/?mg::update-avatar", data : $ctrl.data 
 					}).then(function ( response ) {
 						/// check the success response 
 						if(response.data.success ){
-							$ctrl.submitting = false
+							$ctrl.MRS.userMeta.avatar = response.data.avatar;
+							$timeout(function(){
+									$ctrl.submitting = false
+							}, 1500)
+							jQuery('#modal-avatar').modal('hide');
+
 						}else{
 							$ctrl.submitting = 'error';
 							$timeout(function(){

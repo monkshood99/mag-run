@@ -5,6 +5,8 @@
         var $s = this;
 
         $s.userStats = {}
+        $s.userMeta = {};
+
 
         
         $s.addRun = function( $run_data ){
