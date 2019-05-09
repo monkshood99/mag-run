@@ -9,23 +9,25 @@
 
     <div ng-show="$ctrl.currentChallengeView == 'community'">
         <h4 class = 'mg-h5 with-border'>CHALLENGES</h4>
-        <div class = 'challenge-row py-1' ng-repeat="challenge in $ctrl.communityChallenges">
-            <h3 class = 'challenge-row__header mg-h1-light'>{{challenge.label}} <a class = 'question'>?</a></h3>
-            <div class ='challenge-row__labels d-flex'>
-                <div class = 'challenge-row__label mr-1'>
-                    <div class = 'label-title mg-h5'> Progress</div>
-                    <div class = 'label-title h3-light'> {{challenge.progress}} mi</div>
-                </div>
+        <div class = 'challenge-row py-1 row  {{challenge.inactive  ? "bkg-gray-light" : ""}} ' ng-repeat="challenge in $ctrl.communityChallenges">
+            <div class = 'col'>
+                <h3 class = 'challenge-row__header mg-h1-light'>{{challenge.label}} <a class = 'question'>?</a></h3>
+                <div class ='challenge-row__labels d-flex'>
+                    <div class = 'challenge-row__label mr-1'>
+                        <div class = 'label-title mg-h5'> Progress</div>
+                        <div class = 'label-title h3-light'> {{challenge.progress}} mi</div>
+                    </div>
 
-                <div class = 'challenge-row__label pl-1'>
-                    <div class = 'label-title mg-h5'> Goal Distance</div>
-                    <div class = 'label-title h3-light'> {{challenge.goal | number}} mi</div>
+                    <div class = 'challenge-row__label pl-1'>
+                        <div class = 'label-title mg-h5'> Goal Distance</div>
+                        <div class = 'label-title h3-light'> {{challenge.goal | number}} mi</div>
+                    </div>
                 </div>
-            </div>
-            <div class = 'd-flex align-items-baseline justify-content-space-between challenge-row__progress'>
-                <div class = 'icon {{challenge.icon_start}}'></div>
-                <div class = 'progress-bar'><div class =  'progress' style="width:{{  challenge.progressPercent  }}%"></div></div>
-                <div class = 'icon  {{challenge.icon_end}}'></div>
+                <div class = 'd-flex align-items-baseline justify-content-space-between challenge-row__progress'>
+                    <div class = 'icon {{challenge.icon_start}}'></div>
+                    <div class = 'progress-bar'><div class =  'progress' style="width:{{  challenge.progressPercent  }}%"></div></div>
+                    <div class = 'icon  {{challenge.icon_end}}'></div>
+                </div>
             </div>
         </div>
         <!-- // challenge row --> 

@@ -140,9 +140,14 @@
 							}
 						];
 
-						challenges.forEach( function( challenge ){
+						var $inactive = true;
+						var $i = 0; challenges.forEach( function( challenge ){
+							challenge.inactive = false;
 							challenge.progress = $ctrl.communityData.totals.mi_total,
 							challenge.progressPercent = ( $ctrl.communityData.totals.mi_total / challenge.goal ) * 100  
+							if( $i !== 0 && challenges[$i].progressPercent < 100 ) challenge.inactive = true;
+
+						 $i ++; 
 						});
 						$ctrl.communityChallenges = challenges;
 						return $ctrl.communityChallenges;
