@@ -412,7 +412,7 @@ class Atw_app{
 					else $data->avatar = $avatar_id;
 					update_user_meta($user_id, 'user_avatar', $avatar_id);
 					$success = true;
-					$avatar = wp_get_attachment_thumb_url($id);
+					$avatar = wp_get_attachment_thumb_url($avatar_id);
 				}
 			}
 		}

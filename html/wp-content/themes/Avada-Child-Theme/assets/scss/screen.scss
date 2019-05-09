@@ -859,6 +859,41 @@ body{
     display: flex;
     flex-direction: column;
     justify-content: center;
+    position: relative;
+    cursor: pointer;
+    .btn-edit{
+        position: absolute;
+        top:2px;
+        right:2px;
+        font-size:8px;
+        border-radius: 100%;
+        width:16px;
+        height:16px;
+        text-align: center;
+        background:white;
+        line-height:16px;
+        box-shadow: 1px 1px 2px rgba( 0, 0, 0, .2);
+    }
+    &.avatar-preview{
+        overflow: hidden;
+        width:124px;
+        height:124px;
+        display:block;
+        margin:0px auto;
+        span.fa{
+            font-size: 75px;
+            line-height: 119px;            
+        }
+        img{
+            width: 100%;
+        }
+    }
+}
+#modal-avatar input[type="file"]{
+    border:1px solid $gray-light;
+    border-radius: 4px;
+    padding:10px;
+    width:80%;
 }
 .user-avatar{
     background-size:contain;border-radius:100%;width:60px;height:72px;

@@ -20,6 +20,7 @@
 
 				var $ctrl = $scope.$ctrl = this;
 				$ctrl.MRS = MRS;
+				console.log( $ctrl.MRS )
 				$ctrl.data = {  
 					'user_id' : $scope.userId
 				};
@@ -28,9 +29,12 @@
 
 
 				$ctrl.submit = function(){
+					console.log( $ctrl.MRS )
 					$ctrl.submitting = true;
 					Upload.upload({ url: "/?mg::update-avatar", data : $ctrl.data 
 					}).then(function ( response ) {
+						console.log( response );
+						
 						/// check the success response 
 						if(response.data.success ){
 							$ctrl.MRS.userMeta.avatar = response.data.avatar;

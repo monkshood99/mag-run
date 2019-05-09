@@ -23,7 +23,7 @@
 	$userStats = Atw_app::getUserStats();
 	$communityData = Atw_app::get_community_data( true );
 	$goal_options= Atw_app::getGoalOptions();
-	$user_avatar = Atw_app::getUserAvatar( $user_meta );
+	$user_meta['avatar'] = $user_avatar = Atw_app::getUserAvatar( $user_meta );
 ?>
 
 
@@ -44,7 +44,9 @@
 <div  athlete-calendar target="#calendar" 
 	user-stats='<?= json_encode_attr( $userStats);?>' 
 	goal-options='<?= json_encode_attr($goal_options);?>' 
-	community-data='<?= json_encode_attr( $communityData);?>' >
+	community-data='<?= json_encode_attr( $communityData);?>' 
+	user-meta='<?= json_encode_attr( $user_meta);?>' 
+	>
 
 	<!-- App Container  --> 		
 	<div class = "app-container  bootstrap-wrapper full-width {{$ctrl.ready ? 'ready' : ''}}"  ng-cloak>
