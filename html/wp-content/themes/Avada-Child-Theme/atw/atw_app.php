@@ -53,7 +53,7 @@ class Atw_app{
 				wp_enqueue_script( 'ng-app',  TMPL_PATH . '/service-worker.js' , null , '3', true  );
 				wp_enqueue_script( 'ng-app',  TMPL_PATH . '/assets/js/ng-app.js' , null , '1', true  );
 				wp_enqueue_script( 'mag-run-service',  TMPL_PATH . '/assets/js/service.mag-run.js' , null , '4', true  );
-				wp_enqueue_style( 'mag-app-screen',  TMPL_PATH . '/assets/css/screen.css' ,null, '16' );
+				wp_enqueue_style( 'mag-app-screen',  TMPL_PATH . '/assets/css/screen.css' ,null, '20' );
 			} , 99 , 99 );
 		}
 	}

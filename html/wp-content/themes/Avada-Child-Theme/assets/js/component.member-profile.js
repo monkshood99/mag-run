@@ -469,7 +469,7 @@
 					}
 
 					$ctrl.dayClick = function( date  , $el ) {
-						$target = jQuery(".fc-day[data-date='"+date.format( 'YYYY-MM-DD')+"']").addClass( 'has-events')
+						$target = jQuery(".fc-day[data-date='"+date.format( 'YYYY-MM-DD')+"']");
 						$ctrl.dayClickedResponse( date, $target );
 					}
 					$ctrl.dayClickedResponse = function( date , $target ){
@@ -649,12 +649,13 @@
 							<div class = "bkg-gray-light mt-1">\
 								<div class = "d-flex bg-gray-light justify-content-space-evenly buttons-bar">\
 									<div class="fa fa-facebook run-log-row-button  clickable " ng-click="$ctrl.MRS.postToFb( run ) "></div>\
-									<div class="fa fa-twitter run-log-row-button  clickable " ng-click="$ctrl.MRS.postToFb( run ) "></div>\
-									<span class="icon-mg-edit clickable" ng-click="$ctrl.MRS.startEdit( run )" ng-show="$ctrl.MRS.confirmingDelete !== run && $ctrl.MRS.deleting !== run" ></span>\
-									<span class="fa fas fa-trash-o clickable " ng-click="$ctrl.MRS.confirmDelete( run )" ng-show="$ctrl.MRS.confirmingDelete !== run && $ctrl.MRS.deleting !== run" ></span>\
-									<span class="fa fas fa-times-circle-o clickable " ng-click="$ctrl.MRS.cancelDelete()" ng-show="$ctrl.MRS.confirmingDelete == run" ></span>\
-									<span class="fa fas fa-trash-o clickable" ng-click="$ctrl.deleteRun( run )" ng-show="$ctrl.MRS.confirmingDelete == run" ></span>\
-									<span class="fa fas fa-refresh fa-spin clickable" ng-show="$ctrl.MRS.deleting == run" ></span>\
+									<div class="icon-mg-edit clickable" ng-click="$ctrl.MRS.startEdit( run )" ng-show="$ctrl.MRS.confirmingDelete !== run && $ctrl.MRS.deleting !== run" ></div>\
+									<div class="fa fas fa-trash-o clickable " ng-click="$ctrl.MRS.confirmDelete( run )" ng-show="$ctrl.MRS.confirmingDelete !== run && $ctrl.MRS.deleting !== run" ></div>\
+									<div class="fa fas fa-times-circle-o clickable bkg-yellow" ng-click="$ctrl.MRS.cancelDelete()" ng-show="$ctrl.MRS.confirmingDelete == run && $ctrl.MRS.deleting !== run" ></div>\
+									<div class="fa fas fa-trash-o clickable bkg-red text-white" ng-click="$ctrl.deleteRun( run )" ng-show="$ctrl.MRS.confirmingDelete == run && $ctrl.MRS.deleting !== run "   ></div>\
+									<div class="text-center" style="font-size:19px;" ng-show="$ctrl.MRS.deleting == run" >\
+										<span class = "fa fas fa-refresh fa-spin"></span>\
+									</div>\
 								</div>\
 							</div>\
 						</div>\
@@ -834,3 +835,8 @@
 		
 })();
 
+
+// jQuery( 'document').ready( function(){
+// 	console.log( jQuery('body').attr( 'class' ));
+// 	jQuery('.ua-desktop .calendar-container').addClass( 'container' );
+// } );

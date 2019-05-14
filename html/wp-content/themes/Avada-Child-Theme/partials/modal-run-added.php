@@ -20,7 +20,7 @@
                             <div class ='col stats-row d-flex '>
                                 <div class = 'stats__label mr-1'>
                                     <div class = 'label-title mg-h5'>Date</div>
-                                    <div class = 'label-value'>{{ $ctrl.MRS.new_run.run_date | date:'short'}}</div>
+                                    <div class = 'label-value'>{{ $ctrl.MRS.new_run.run_date | date:'MM DD YYYY'}}</div>
                                 </div>
                             </div>
                             <hr class = 'col-11'/>

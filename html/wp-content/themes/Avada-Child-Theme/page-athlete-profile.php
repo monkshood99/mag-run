@@ -85,6 +85,9 @@
 		<?= Loader::partial( 'partials/modal-run-added'  , compact( 'userStats', 'goal_options' , 'current_user', 'user_meta'));?>
 		<!-- // Modal Run Added --> 
 
+		<!-- Modal Run Added --> 
+		<?= Loader::partial( 'partials/modal-avatar'  , compact( 'userStats', 'goal_options' , 'current_user', 'user_meta'));?>
+		<!-- // Modal Run Added --> 
 
 		<div class = 'show-mobile'>
 			<!-- Mobile View Switcher --> 

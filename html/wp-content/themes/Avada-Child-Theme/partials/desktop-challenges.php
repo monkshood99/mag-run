@@ -1,10 +1,25 @@
+<?php 
+    $fname = return_if( $user_meta, 'first_name');
+    $city = return_if( $user_meta , 'mepr-address-city');
+    $state = return_if( $user_meta , 'mepr-address-state');
+    $lname = return_if( $user_meta, 'last_name');
+    $avatar = Atw_app::getUserAvatar( $user_meta ); 
+?>
 <div class = 'container mb-4'>
 
     <div class="row">
         <div class="col-md-6 offset-md-3 text-center ">
-            <div class = 'beetle beetle-circle bkg-yellow mx-auto '><span class="icon-beetle"></span></div>
-                <h1 class = 'mg-h1'><?= $user_meta['first_name'][0] . ' ' .$user_meta['last_name'][0] ;?></h1>
-            <!-- <h4 class = mg-h4><i class="glyphicon fa-map-marker fas text-yellow"></i>Boulder, Co</h4> -->
+            <!-- <div class = 'beetle beetle-circle bkg-yellow mx-auto '><span class="icon-beetle"></span></div> -->
+            <a class = 'profile-avatar mx-auto' data-toggle="modal" data-target="#modal-avatar" href="#modal-avatar" >
+                <div class = 'user-avatar'  ng-if="$ctrl.MRS.userMeta.avatar" style = 'background-image:url({{$ctrl.MRS.userMeta.avatar}});'></div>
+                <span class="fa fa-user" ng-if="!$ctrl.MRS.userMeta.avatar"></span>
+                <span class = 'fa fa-pencil btn-edit'></span>
+            </a>
+
+                <h1 class = 'mg-h1'><?= $user_meta['first_name'] . ' ' .$user_meta['last_name'] ;?></h1>
+            <?php if( $city || $state ){?>
+                <h5 class = mg-h5><i class="glyphicon fa-map-marker fas text-yellow"></i><?= $city;?><?= $city && $state ? ',' : '';?> <?= $state;?></h5>
+            <?php } ?>
         </div>
     </div>
     <div class = 'row text-center'>

@@ -21,11 +21,11 @@
 /** The name of the database for WordPress */
 define('REVISR_WORK_TREE', '/home/magnol38/public_html/'); // Added by Revisr
 define('REVISR_GIT_PATH', ''); // Added by Revisr
-define('DB_NAME','mag_run_dev');
+define('DB_NAME','magnol38_wp964_st1');
 /** MySQL database username */
-define('DB_USER','root');
+define('DB_USER','magnol38_st1');
 /** MySQL database password */
-define('DB_PASSWORD','niel;oidncaa*');
+define('DB_PASSWORD','76qOTHO_6gMzUXn18ktc');
 /** MySQL hostname */
 define('DB_HOST', 'localhost');
 /** Database Charset to use in creating database tables. */
