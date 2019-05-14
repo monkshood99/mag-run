@@ -240,7 +240,9 @@ class Atw_app{
 			'where'=>  $where , 
 			'limit'=> '1',
 			'orderby'=> '`miles` DESC'
-		]  )->data();
+		]  )->data->sql;
+		prx( $longest_run);exit;
+
 		$fastest_pace = pods( 'run')->find( [ 
 			'select'=> '`pace_mi`' , 
 			'where'=>  $where , 
