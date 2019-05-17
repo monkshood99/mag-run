@@ -176,14 +176,15 @@ class Atw_app{
 			'select'=> '`miles`' , 
 			'where'=>  $where , 
 			'limit'=> '1',
-			'orderby'=> '`miles` DESC'
+			'orderby'=> '`miles` + 0 DESC'
 		]  )->data();
 		$fastest_pace = pods( 'run')->find( [ 
 			'select'=> '`pace_mi`' , 
 			'where'=>  $where , 
-			'limit'=> '1',
-			'orderby'=> '`pace_mi` DESC'
+			// 'limit'=> '1',
+			'orderby'=> '`pace_mi` + 0 ASC'
 		]  )->data();
+
 		$this_week->longest_run = return_if( $longest_run, 0 ) ?  $longest_run[0]->miles : 0;
 		$this_week->fastest_pace = return_if( $fastest_pace, 0 ) ?  $fastest_pace[0]->pace_mi : 0;
 
@@ -211,15 +212,16 @@ class Atw_app{
 			foreach( $weeks as $week ){
 				$all_miles = explode( ',' , $week->all_miles );
 				if( !empty( $all_miles)){
-					rsort( $all_miles );
+					rsort( $all_miles , SORT_NUMERIC);
 					$week->longest_run = $all_miles[0];
 					unset( $week->all_miles);
 				}
 				$all_paces = explode( ',' , $week->all_paces );
 				if( !empty( $all_paces)){
-					sort( $all_paces );
+					sort( $all_paces , SORT_NUMERIC);
 					$week->fastest_pace = $all_paces[0];
-					unset( $week->all_paces);
+					// prx( $all_paces );
+					// unset( $week->all_paces);
 				}
 				$data->weeks[$week->week_name]= $week;
 			}
@@ -239,17 +241,15 @@ class Atw_app{
 			'select'=> '`miles`' , 
 			'where'=>  $where , 
 			'limit'=> '1',
-			'orderby'=> '`miles` DESC'
-		]  )->data->sql;
-		prx( $longest_run);exit;
+			'orderby'=> '`miles` + 0 DESC'
+		]  )->data();
 
 		$fastest_pace = pods( 'run')->find( [ 
 			'select'=> '`pace_mi`' , 
 			'where'=>  $where , 
 			'limit'=> '1',
-			'orderby'=> '`pace_mi` DESC'
+			'orderby'=> '`pace_mi` + 0 ASC'
 		]  )->data();
-
 		$this_year = return_if( $this_year, 0  , $default_totals  );
 		$this_year->km_total = is_numeric( $this_year->km_total ) ? $this_year->km_total : 0  ;
 		$this_year->mi_total = is_numeric( $this_year->mi_total ) ? $this_year->mi_total : 0  ;
